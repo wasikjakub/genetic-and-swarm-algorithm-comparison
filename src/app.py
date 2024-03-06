@@ -1,6 +1,5 @@
-# import warehouse
-# import robot
-# import node
+from warehouse import Warehouse
+from algorithm import algorithm
 
 import random 
 import networkx as nx
@@ -25,12 +24,12 @@ def generate_robots():
 def main():
     print("Hello World!")
     #TODO generacja magazynu i robotów
-    warehouse = warehouse.Warehouse()
+
+    warehouse = Warehouse()
     robots = generate_robots()
     #TODO wygenerowanie listy zamówień 
     orders = order()
 
     #TODO run algorithm (rojowy lub genetyczny)
-    algorithm = algorithm(order=orders, warehouse=warehouse, 
-                          robots=robots) #TODO zwrócić listę tras i kosztów
+    result = algorithm(order=orders, warehouse=warehouse) #TODO zwrócić listę tras i kosztów
     #TODO wizualizacja wyników i porównanie z innymi algorytmami
