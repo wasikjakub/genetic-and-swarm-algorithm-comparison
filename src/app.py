@@ -17,18 +17,7 @@ def order(num_items):
 
     return orders
 
-def graph():
-    G = nx.Graph()
 
-    G.add_node(1, weight=10)
-    G.add_node(2, weight=15)
-    G.add_node(3, weight=20)
-
-    G.add_edge(1, 2, weight=5)
-    G.add_edge(2, 3, weight=7)
-    G.add_edge(1, 3, weight=9)
-    
-    return G
 def generate_robots():
     #TODO zwrócić listę robotów {robot1, robot2, ...}
     raise NotImplementedError

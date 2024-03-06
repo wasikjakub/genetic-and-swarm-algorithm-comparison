@@ -1,15 +1,15 @@
-
+import networkx as nx
 
 class Warehouse:
-    def __init__(self, magazin_id: str, nx_graph: dict, 
-                 ) -> None:
-        self.magazin_id = magazin_id
-        self.nx_graph = nx_graph
+    def __init__(self, txt_file, robots) -> None:
+        self.graph = nx.read_adjlist(txt_file)
+        self.robots = robots
 
-        
-    
-    def graph(self):
-        pass
+    # generate warehouse graph with wages
+        # G.add_node(1, weight=10)
+        # G.add_node(2, weight=15)
+        # G.add_node(3, weight=20)
 
-    def add_node(self, node):
-        pass
+        # G.add_edge(1, 2, weight=5)
+        # G.add_edge(2, 3, weight=7)
+        # G.add_edge(1, 3, weight=9)
