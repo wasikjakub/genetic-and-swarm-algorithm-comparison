@@ -1,6 +1,6 @@
 from typing import NamedTuple, Dict, List
-from ..objects.warehouse import Warehouse
-from ..objects.robot import Robot
+from src.objects.warehouse import Warehouse
+from src.objects.robot import Robot
 
 
 NodeId = int
