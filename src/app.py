@@ -1,8 +1,11 @@
-from warehouse import Warehouse
-from algorithm import algorithm
+from objects.robot import Robot
+from objects.warehouse import Warehouse
+from algorithms.interface import RobotSize
+from algorithms.swarm import AntAlgorithm
 
 import random 
 import networkx as nx
+from typing import List
 
 def order(num_items):
     #TODO zwrócić listę zamówień {id: licza sztuk, id2: liczba sztuk, ...}
@@ -16,20 +19,25 @@ def order(num_items):
 
     return orders
 
+def generate_robots(size_of_robots: List[RobotSize] = [RobotSize.SMALL, RobotSize.SMALL]):
+    tab = []
+    for idx, size in enumerate(size_of_robots):
+        tab.append(Robot(id=idx, size=size))
 
-def generate_robots():
-    #TODO zwrócić listę robotów {robot1, robot2, ...}
-    raise NotImplementedError
+    return tab
 
 def main():
     print("Hello World!")
     #TODO generacja magazynu i robotów
-
-    warehouse = Warehouse()
-    robots = generate_robots()
+    size_of_robots = [RobotSize.SMALL, RobotSize.SMALL]   # TODO: zparametryzować
+    robots = generate_robots(size_of_robots)
+    warehouse = Warehouse(txt_file='generated_graphs/graph_4_4.adjlist', robots=robots)
     #TODO wygenerowanie listy zamówień 
     orders = order()
 
     #TODO run algorithm (rojowy lub genetyczny)
-    result = algorithm(order=orders, warehouse=warehouse) #TODO zwrócić listę tras i kosztów
+    result = AntAlgorithm(order=orders, warehouse=warehouse) #TODO zwrócić listę tras i kosztów
     #TODO wizualizacja wyników i porównanie z innymi algorytmami
+
+
+main()

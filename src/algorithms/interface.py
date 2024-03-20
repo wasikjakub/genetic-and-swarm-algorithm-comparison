@@ -1,6 +1,6 @@
-from typing import NamedTuple, Dict, List
-from ..objects.warehouse import Warehouse
-from ..objects.robot import Robot
+from typing import NamedTuple, Dict, List, Literal
+from objects.warehouse import Warehouse
+from objects.robot import Robot
 
 
 NodeId = int
@@ -27,3 +27,8 @@ class AlgorithmInput(NamedTuple):
 
 class AlgorithmOutput(NamedTuple):
     result: Dict[Robot, RobotRoute]
+
+class RobotSize(NamedTuple):
+    SMALL = 'small'
+    MEDIUM = 'medium'
+    LARGE = 'large'
