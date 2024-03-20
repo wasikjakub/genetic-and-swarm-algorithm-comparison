@@ -1,7 +1,7 @@
 import networkx as nx
 from pathlib import Path
 from typing import List
-from robot import Robot
+from .robot import Robot
 
 
 class Warehouse:

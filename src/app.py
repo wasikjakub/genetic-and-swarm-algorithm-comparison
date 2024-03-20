@@ -1,6 +1,4 @@
-from objects.robot import Robot
-from objects.warehouse import Warehouse
-from algorithms.interface import RobotSize
+from objects import Warehouse, Robot, RobotSize
 from algorithms.swarm import AntAlgorithm
 
 import random 
@@ -33,7 +31,8 @@ def main():
     robots = generate_robots(size_of_robots)
     warehouse = Warehouse(txt_file='generated_graphs/graph_4_4.adjlist', robots=robots)
     #TODO wygenerowanie listy zamówień 
-    orders = order()
+    example_num_items = 10
+    orders = order(example_num_items)
 
     #TODO run algorithm (rojowy lub genetyczny)
     result = AntAlgorithm(order=orders, warehouse=warehouse) #TODO zwrócić listę tras i kosztów

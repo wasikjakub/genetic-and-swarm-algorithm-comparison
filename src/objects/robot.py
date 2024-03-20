@@ -1,4 +1,9 @@
-from algorithms.interface import RobotSize
+from enum import Enum
+
+class RobotSize(Enum):
+    SMALL = 'small'
+    MEDIUM = 'medium'
+    LARGE = 'large'
 
 class RobotSizeError(Exception):
     def __init__(self, message="Wrong type of robot size."):
