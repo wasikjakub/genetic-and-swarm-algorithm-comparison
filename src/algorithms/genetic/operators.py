@@ -27,7 +27,7 @@ def crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: O
     new_solution = AlgorithmOutput({})
     items_left = copy.deepcopy(order_items.items)
     for i in first_parent_robots_indices:
-        new_solution.result[robots[i]] = parent1.result[robots[i]]
+        new_solution.result[robots[i]] = copy.deepcopy(parent1.result[robots[i]])
         for node, quantity in parent1.result[robots[i]].items.items():
             if items_left[node] == quantity:
                 items_left.pop(node)
@@ -128,4 +128,5 @@ parent1 = AlgorithmOutput({r1: rr3, r2: rr1, r3: rr2})
 parent2 = AlgorithmOutput({r1: rr1, r2: rr2, r3: rr3})
 weights = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 nowe = crossover(parent1, parent2, orderr, weights)
+mutate(parent2, 1)
 print(nowe)
