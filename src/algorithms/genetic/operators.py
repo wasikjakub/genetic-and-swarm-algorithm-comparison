@@ -47,7 +47,6 @@ def crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: O
                         temp_robot_route.items[node] = quantity
                         items_left[node] = items_left[node] - quantity
         new_solution.result[robot] = temp_robot_route
-    # TODO uzupełnić trasy zależnie od długości trasy
     fill_routes(new_solution, Order(items_left), weights)
     return new_solution
 
@@ -95,6 +94,20 @@ def calculate_times(robots: Dict[Robot, RobotRoute]) -> Dict[Robot, int]:
     return {l[i]: i*2 for i in range(len(robots))}  # dummy
 
 
+def mutate(solution: AlgorithmOutput, robots_count: int):
+    """
+    Shuffle node order in robots_count randomly chosen robots
+
+    :param solution:
+    :param robots_count:
+    """
+    robots_indices = list(range(len(solution.result)))
+    chosen_robot_indices = random.sample(robots_indices, robots_count)
+    robots = list(parent1.result.keys())
+    for robot_i in chosen_robot_indices:
+        random.shuffle(solution.result[robots[robot_i]].route)
+
+
 # teściki - do wywalenia ostatecznie, nie chce mi się pisać unit testów
 r1 = Robot('1', 2, 14)
 t1 = [1, 3, 5]
@@ -116,6 +129,3 @@ parent2 = AlgorithmOutput({r1: rr1, r2: rr2, r3: rr3})
 weights = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 nowe = crossover(parent1, parent2, orderr, weights)
 print(nowe)
-
-#def mutate(self, route: RobotRoute, mutation_rate: float) -> RobotRoute:
-#TODO
