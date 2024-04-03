@@ -1,4 +1,5 @@
 import random
+from pathlib import Path
 from typing import List
 
 import networkx as nx
@@ -49,7 +50,7 @@ def main():
 
 
 def mock_main():
-    graph = nx.read_adjlist('generated_graphs/graph_4_4.adjlist')
+    graph = nx.read_adjlist('/home/lf/stdia/8/ML/deep_learning/generated_graphs/graph_4_4.adjlist')
     orders = {
         7: 1,
         11: 1,
@@ -84,5 +85,71 @@ def mock_main():
     )
 
 
-if __name__ == '__main__':
-    mock_main()
+# if __name__ == '__main__':
+#     mock_main()
+
+
+def test_case_1():
+    robots = [
+        Robot('1', RobotSize.SMALL),
+        Robot('2', RobotSize.SMALL),
+        Robot('3', RobotSize.SMALL),
+        Robot('4', RobotSize.LARGE),
+    ]
+
+    orders = {
+        7: 1,
+        11: 1,
+        9: 3,
+        8: 1,
+        6: 12,
+        1: 4,
+        2: 2,
+    }
+
+    path = Path('/home/lf/stdia/8/ML/deep_learning/generated_graphs/graph_10_10.adjlist')
+    warehouse = Warehouse(
+        txt_file=path, robots=robots)
+
+    alg = AntAlgorithm.from_orders_warehouse(orders, warehouse)
+    solution = alg.solve(
+        iter=1000,
+        alpha=0.1,
+        beta=0.1,
+        decay_rate=0.01
+    )
+
+    return alg
+
+def test_case_2():
+    robots = [
+        Robot('1', RobotSize.SMALL),
+        Robot('2', RobotSize.MEDIUM),
+        Robot('3', RobotSize.LARGE),
+    ]
+
+    orders = {
+        7: 1,
+        11: 1,
+        9: 3,
+        8: 1,
+        6: 12,
+        1: 4,
+        2: 2,
+    }
+
+    orders = {k: v * 1 for k, v in orders.items()}
+
+    path = Path('/home/lf/stdia/8/ML/deep_learning/generated_graphs/graph_10_10.adjlist')
+    warehouse = Warehouse(
+        txt_file=path, robots=robots)
+
+    alg = AntAlgorithm.from_orders_warehouse(orders, warehouse)
+    solution = alg.solve(
+        iter=1000,
+        alpha=0.1,
+        beta=0.1,
+        decay_rate=0.01
+    )
+
+    return alg

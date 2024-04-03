@@ -3,18 +3,25 @@ from typing import List
 import networkx as nx
 import numpy as np
 
+from objects.warehouse import Warehouse
+
+from .adapter import transform_graph
 from .ant import START_NODE, Ant
 
 
 class AntAlgorithm:
-    MINMAX = False
+    MINMAX = True
 
-    MAX_ITER = 100
+    MAX_ITER = 1000
     MINMAX_NO_IMPROVEMENT_ITER_RESET = 20
 
     def __init__(self, graph: nx.Graph, ants: List[Ant]) -> None:
         self.graph = graph
         self.ants = ants
+
+        self.runtime_data = {
+            'best_solutions': []
+        }
 
         self.reset_iter_state()
 
@@ -38,10 +45,14 @@ class AntAlgorithm:
                     {
                         'id': i + 1,
                         'total_distance': ant.runtime_data['total_distance'],
-                        'path': ant.path
+                        'capacity': ant.max_capacity,
+                        'velocity': ant.velocity_factor,
+                        'total_load': sum(ant.runtime_data['load_history']),
+                        'path': ant.path,
                     }
                     for i, ant in enumerate(self.ants)
                 ]
+                self.runtime_data['best_solutions'].append(best_solution)
 
                 if self.MINMAX:
                     it_to_reset_minmax = self.MINMAX_NO_IMPROVEMENT_ITER_RESET
@@ -138,13 +149,16 @@ class AntAlgorithm:
 
     def simulate(self):
         i = 0
-        while i < self.MAX_ITER and not self.stop_simulation():
+        while not self.stop_simulation():
             for ant in self.ants:
                 ant.tick()
             i += 1
 
+            if i > self.MAX_ITER:
+                raise TimeoutError()
+
         score = max(
-            ant.runtime_data['total_distance'] * ant.velocity_factor
+            ant.runtime_data['total_distance'] / ant.velocity_factor
             for ant in self.ants
         )
 
@@ -163,3 +177,17 @@ class AntAlgorithm:
             for ant in self.ants
         )
         return weights_left <= 0 and all(ants_returned)
+
+    @classmethod
+    def from_orders_warehouse(cls, orders, warehouse: Warehouse):
+        graph = transform_graph(warehouse.graph, orders)
+        ants = [
+            Ant(
+                graph,
+                robot.load_capacity,
+                robot.velocity,
+            )
+            for robot in warehouse.robots
+        ]
+
+        return cls(graph, ants)

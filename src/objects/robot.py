@@ -21,9 +21,9 @@ class Robot:
 
     def calculate_capacity(self):
         if self.size == RobotSize.SMALL:
-            return 1
+            return 2
         elif self.size == RobotSize.MEDIUM:
-            return 5
+            return 4
         elif self.size == RobotSize.LARGE:
             return 7
         else:
@@ -31,10 +31,10 @@ class Robot:
     
     def calculate_velocity(self):
         if self.size == RobotSize.SMALL:
-            return 7
-        elif self.size == RobotSize.MEDIUM:
-            return 5
-        elif self.size == RobotSize.LARGE:
             return 1
+        elif self.size == RobotSize.MEDIUM:
+            return 0.7
+        elif self.size == RobotSize.LARGE:
+            return 0.4
         else:
             raise RobotSizeError

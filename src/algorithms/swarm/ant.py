@@ -62,7 +62,7 @@ class Ant:
 
         distance = self.graph[current_node][next_node]['distance']
 
-        self.pause_ctr = max(math.ceil(distance * self.velocity_factor), 1)
+        self.pause_ctr = max(math.ceil(distance / self.velocity_factor), 1)
 
         self.runtime_data['total_distance'] += distance
 
