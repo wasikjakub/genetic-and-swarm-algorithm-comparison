@@ -7,7 +7,10 @@ from .ant import START_NODE, Ant
 
 
 class AntAlgorithm:
+    MINMAX = False
+
     MAX_ITER = 100
+    MINMAX_NO_IMPROVEMENT_ITER_RESET = 20
 
     def __init__(self, graph: nx.Graph, ants: List[Ant]) -> None:
         self.graph = graph
@@ -18,6 +21,13 @@ class AntAlgorithm:
     def solve(self, iter: int, alpha: float, beta: float, decay_rate: float):
         best_score = np.inf
         best_solution = None
+
+        it_to_reset_minmax = self.MINMAX_NO_IMPROVEMENT_ITER_RESET
+
+        if self.MINMAX:
+            self.set_max_pheromone()
+
+        self.update_pheromone = self.update_pheromone_minmax if self.MINMAX else self.update_pheromone_classic
 
         for it in range(iter):
             result = self.simulate()
@@ -32,11 +42,22 @@ class AntAlgorithm:
                     }
                     for i, ant in enumerate(self.ants)
                 ]
-                self.update_probs(alpha, beta)
+
+                if self.MINMAX:
+                    it_to_reset_minmax = self.MINMAX_NO_IMPROVEMENT_ITER_RESET
+                    self.update_edge_load()
 
                 print(f'Found better score {best_score} in iteration {it}')
-            else:
-                self.decay_pheromone(decay_rate)
+
+            self.update_pheromone(decay_rate)
+            self.update_probs(alpha, beta)
+
+            if self.MINMAX:
+                it_to_reset_minmax -= 1
+
+                if it_to_reset_minmax <= 0:
+                    it_to_reset_minmax = self.MINMAX_NO_IMPROVEMENT_ITER_RESET
+                    self.set_max_pheromone()
 
             self.reset_iter_state()
 
@@ -53,23 +74,38 @@ class AntAlgorithm:
             for node in self.graph.nodes()
         })
 
-    def decay_pheromone(self, decay_rate: float) -> None:
+    def set_max_pheromone(self):
         for u, v in self.graph.edges():
-            self.graph[u][v]['pheromone'] *= (1 - decay_rate)
+            nx.set_edge_attributes(self.graph, {
+                (u, v): {
+                    'pheromone': 1,
+                }
+            })
 
-    def update_probs(self, alpha: float, beta: float) -> None:
+    def update_pheromone_minmax(self, decay_rate: float) -> None:
+        for u, v in self.graph.edges():
+            updated_pheromone = (1 - decay_rate) * self.graph[u][v]['pheromone'] + self.graph[u][v]['load_fraction']  # noqa
+            updated_pheromone = np.clip(updated_pheromone, 0, 1)
+
+            self.graph[u][v]['pheromone'] = updated_pheromone
+
+    def update_pheromone_classic(self, decay_rate: float) -> None:
         self.update_edge_load()
 
         for u, v in self.graph.edges():
-            pheromone = self.graph[u][v]['load_norm'] ** alpha
+            updated_pheromone = (1 - decay_rate) * self.graph[u][v]['pheromone'] + self.graph[u][v]['load_fraction']  # noqa
+
+            self.graph[u][v]['pheromone'] = updated_pheromone
+
+    def update_probs(self, alpha: float, beta: float) -> None:
+        for u, v in self.graph.edges():
+            pheromone = self.graph[u][v]['pheromone'] ** alpha
             heuristic = self.graph[u][v]['distance_norm'] ** beta
 
             p = pheromone * heuristic
 
             nx.set_edge_attributes(self.graph, {
                 (u, v): {
-                    'pheromone': pheromone,
-                    'heuristic': heuristic,
                     'p': p
                 }
             })
@@ -89,10 +125,16 @@ class AntAlgorithm:
             self.graph[u][v]['edge_load']
             for u, v in self.graph.edges()
         )
-        load_norm = 1.0 / self.graph.number_of_edges() if max_load == 0 else None
+        total_load = sum(
+            self.graph[u][v]['edge_load']
+            for u, v in self.graph.edges()
+        )
+
+        load_even = 1.0 / self.graph.number_of_edges() if max_load == 0 else None
 
         for u, v in self.graph.edges():
-            self.graph[u][v]['load_norm'] = load_norm or self.graph[u][v]['edge_load'] / max_load
+            self.graph[u][v]['load_norm'] = load_even or self.graph[u][v]['edge_load'] / max_load
+            self.graph[u][v]['load_fraction'] = load_even or self.graph[u][v]['edge_load'] / total_load
 
     def simulate(self):
         i = 0
