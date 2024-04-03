@@ -1,12 +1,14 @@
-from typing import NamedTuple, Dict, List, Literal
-from objects import Warehouse, Robot
+from typing import Dict, List, Literal, NamedTuple
 
+from objects import Robot, Warehouse
 
-NodeId = int
+NodeId = str
+
 
 class Order(NamedTuple):
     # int is the number of items in a given node
     items: Dict[NodeId, int]
+
 
 class RobotRoute(NamedTuple):
     route: List[NodeId]

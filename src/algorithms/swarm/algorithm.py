@@ -1,49 +1,123 @@
+from typing import List
+
 import networkx as nx
+import numpy as np
 
-from .ant import Ant, START_NODE
-
-
-def ant_algorithm():
-    # temp mocks
-    graph = nx.Graph()
-    ants = [
-        Ant(graph, max_capacity=10, velocity_factor=1),
-        Ant(graph, max_capacity=10, velocity_factor=1),
-    ]
-    iterations = 100
-
-    for _ in range(iterations):
-        pass
+from .ant import START_NODE, Ant
 
 
-def algorithm_iteration(ant):
-    
-    for ant in ants:
-        ant.reset()
+class AntAlgorithm:
+    MAX_ITER = 100
 
+    def __init__(self, graph: nx.Graph, ants: List[Ant]) -> None:
+        self.graph = graph
+        self.ants = ants
 
-def simulate(graph, ants):
-    while True:
-        for ant in ants:
-            ant.tick()
+        self.reset_iter_state()
 
-        if stop_condition():
-            break
+    def solve(self, iter: int, alpha: float, beta: float, decay_rate: float):
+        best_score = np.inf
+        best_solution = None
 
-    def stop_condition():
+        for it in range(iter):
+            result = self.simulate()
+
+            if result['score'] < best_score:
+                best_score = result['score']
+                best_solution = [
+                    {
+                        'id': i + 1,
+                        'total_distance': ant.runtime_data['total_distance'],
+                        'path': ant.path
+                    }
+                    for i, ant in enumerate(self.ants)
+                ]
+                self.update_probs(alpha, beta)
+
+                print(f'Found better score {best_score} in iteration {it}')
+            else:
+                self.decay_pheromone(decay_rate)
+
+            self.reset_iter_state()
+
+        return best_solution
+
+    def reset_iter_state(self):
+        for ant in self.ants:
+            ant.reset()
+
+        nx.set_node_attributes(self.graph, {
+            node: {
+                "weight_left": self.graph.nodes[node]['weight']
+            }
+            for node in self.graph.nodes()
+        })
+
+    def decay_pheromone(self, decay_rate: float) -> None:
+        for u, v in self.graph.edges():
+            self.graph[u][v]['pheromone'] *= (1 - decay_rate)
+
+    def update_probs(self, alpha: float, beta: float) -> None:
+        self.update_edge_load()
+
+        for u, v in self.graph.edges():
+            pheromone = self.graph[u][v]['load_norm'] ** alpha
+            heuristic = self.graph[u][v]['distance_norm'] ** beta
+
+            p = pheromone * heuristic
+
+            nx.set_edge_attributes(self.graph, {
+                (u, v): {
+                    'pheromone': pheromone,
+                    'heuristic': heuristic,
+                    'p': p
+                }
+            })
+
+    def update_edge_load(self):
+        for u, v in self.graph.edges():
+            self.graph[u][v]['edge_load'] = 10e-5
+        for ant in self.ants:
+            it = 0
+            loads = ant.runtime_data['load_history']
+            for src, dst in zip(ant.path[:-1], ant.path[1:]):
+                self.graph[src][dst]['edge_load'] += loads[it]
+                if dst == START_NODE:
+                    it += 1
+
+        max_load = max(
+            self.graph[u][v]['edge_load']
+            for u, v in self.graph.edges()
+        )
+        load_norm = 1.0 / self.graph.number_of_edges() if max_load == 0 else None
+
+        for u, v in self.graph.edges():
+            self.graph[u][v]['load_norm'] = load_norm or self.graph[u][v]['edge_load'] / max_load
+
+    def simulate(self):
+        i = 0
+        while i < self.MAX_ITER and not self.stop_simulation():
+            for ant in self.ants:
+                ant.tick()
+            i += 1
+
+        score = max(
+            ant.runtime_data['total_distance'] * ant.velocity_factor
+            for ant in self.ants
+        )
+
+        return {
+            "iter": i,
+            "score": score
+        }
+
+    def stop_simulation(self):
         weights_left = sum(
-            graph.nodes[node]['weight']
-            for node in graph.neighbors(START_NODE)
+            self.graph.nodes[node]['weight_left']
+            for node in self.graph.neighbors(START_NODE)
         )
-        return weights_left <= 0 and all(
+        ants_returned = (
             ant.path[-1] == START_NODE
-            for ant in ants
+            for ant in self.ants
         )
-
-
-# class AntAlgorithm:
-#     def __init__(self, order, warehouse) -> None:
-#         # self.order = order
-#         # self.warehouse = warehouse
-#         # print(self.order)
-#         # print(self.warehouse)
+        return weights_left <= 0 and all(ants_returned)
