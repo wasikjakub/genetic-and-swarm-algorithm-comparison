@@ -20,12 +20,20 @@ class AntAlgorithm:
         self.ants = ants
 
         self.runtime_data = {
-            'best_solutions': []
+            'best_solutions': [],
+            'best_scores': [],
         }
 
         self.reset_iter_state()
 
     def solve(self, iter: int, alpha: float, beta: float, decay_rate: float):
+        self.runtime_data['params'] = {
+            "iter": iter,
+            "alpha": alpha,
+            "beta": beta,
+            "decay_rate": decay_rate,
+        }
+        
         best_score = np.inf
         best_solution = None
 
@@ -53,6 +61,7 @@ class AntAlgorithm:
                     for i, ant in enumerate(self.ants)
                 ]
                 self.runtime_data['best_solutions'].append(best_solution)
+                self.runtime_data['best_scores'].append((it, best_score))
 
                 if self.MINMAX:
                     it_to_reset_minmax = self.MINMAX_NO_IMPROVEMENT_ITER_RESET
