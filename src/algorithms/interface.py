@@ -1,6 +1,6 @@
 from typing import NamedTuple, Dict, List
-from src.objects.warehouse import Warehouse
-from src.objects.robot import Robot
+from objects.warehouse import Warehouse
+from objects.robot import Robot
 
 
 NodeId = int
@@ -23,7 +23,6 @@ class Node(NamedTuple):
 class AlgorithmInput(NamedTuple):
     warehouse: Warehouse
     order: Order
-
 
 class AlgorithmOutput(NamedTuple):
     result: Dict[Robot, RobotRoute]
