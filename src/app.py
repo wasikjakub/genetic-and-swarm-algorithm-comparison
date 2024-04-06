@@ -9,7 +9,7 @@ import networkx as nx
 from objects.robot import Robot, RobotSize
 from objects.warehouse import Warehouse
 
-from algorithms.genetics.other import generate_random_solution
+from algorithms.genetics.other import generate_random_solution, calculate_one
 
 def order(num_items):
     # TODO zwrócić listę zamówień {id: licza sztuk, id2: liczba sztuk, ...}
@@ -56,13 +56,13 @@ def mock_main():
     path = Path('generated_graphs\graph_4_4.adjlist')
 
     orders = {
-        7: 1,
-        11: 1,
+        7: 5,
+        11: 4,
         9: 3,
-        8: 1,
+        8: 3,
         6: 2,
         1: 4,
-        2: 2,
+        2: 3,
     }
 
     robots = [
@@ -76,6 +76,9 @@ def mock_main():
         txt_file=path, robots=robots)
 
     solution = generate_random_solution(orders, warehouse)
+
+    longest = calculate_one(solution, warehouse)
+    print(longest)
     # graph = transform_graph(graph, orders)
     # ants = [
     #     Ant(graph, max_capacity=10, velocity_factor=1),
@@ -99,7 +102,7 @@ def mock_main():
     #     sep='\n'
     # )
     # print('yea')
-    print(solution)
+
 
 
 if __name__ == '__main__':
