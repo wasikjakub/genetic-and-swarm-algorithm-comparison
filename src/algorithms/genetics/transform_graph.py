@@ -69,3 +69,6 @@ def change_graph(graph):
                 
     return transformed_graph
 
+# graph = nx.read_adjlist('../../../generated_graphs/graph_4_4.adjlist')
+# x = change_graph(graph)
+# print(x)

@@ -1,17 +1,17 @@
 import networkx as nx
-import numpy as np
 import random
-from objects.robot import Robot
-from algorithms.interface import AlgorithmOutput, Order, RobotRoute
-from typing import Dict, List
-from objects.warehouse import Warehouse
-from collections import defaultdict
+from src.objects.robot import Robot
+from src.algorithms.interface import AlgorithmOutput, Order, RobotRoute
+from typing import Dict, List, Tuple
+from src.objects.warehouse import Warehouse
+from math import ceil
 
-from algorithms.genetics.transform_graph import change_graph
+from src.algorithms.genetics.transform_graph import change_graph
 
-def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int, int]):
+
+def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int, int], warehouse):
     for i, quantity in items_left.items.items():
-        times = calculate_times(solution.result)
+        times = calculate_times(solution, warehouse)
         subtracted = 0
         for k in range(len(times)):
             temp_robot = min(times, key=times.get)
@@ -58,22 +58,19 @@ def capacity_left(robot: Robot, route: RobotRoute, weights: Dict[int, int]) -> i
     return robot.load_capacity - s
 
 
-def rank_selection(population: List[AlgorithmOutput, int]) -> List[AlgorithmOutput]:  # or double
-    solutions_to_take = int(len(population) * parents_to_population_rate)  # I want to take 2/3 of the solutions
+def rank_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
+    solutions_to_take = int(ceil(len(population) * parents_to_population_rate))  # I want to take 2/3 of the solutions
 
     return [solution[0] for solution in population[:solutions_to_take]]
 
 
 def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot, float]: #must be float since distance is normalised
-    #TODO calculate costs of routes for each robot
-    # l = list(robots.keys())
-    # return {l[i]: i*2 for i in range(len(robots))}  # dummy
     distance_dict = {}
 
     graph_transformed = change_graph(warehouse.graph)
     distance_dict_norm = nx.get_edge_attributes(graph_transformed, 'distance_norm')
 
-    for robot, (route, _) in robots.items():
+    for robot, (route, _) in robots.result.items():
         
         total_distance = 0
 
@@ -85,9 +82,8 @@ def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot
                 total_distance += distance_dict_norm[(u, v)]
             except KeyError:
                 total_distance += distance_dict_norm[(v, u)]
-                
 
-        distance_dict[robot] =  float("{:.2f}".format(total_distance))
+        distance_dict[robot] = float("{:.2f}".format(total_distance))
     
     times_dict = {robot: float("{:.2f}".format(distance_dict[robot] * robot.calculate_velocity())) for robot in distance_dict.keys()}
 
@@ -95,18 +91,16 @@ def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot
 
 
 def calculate_one(solution: AlgorithmOutput, warehouse: Warehouse) -> float: #assumed that it's robot id?
-    #TODO: najdłuższa z calculate_times
     return max(calculate_times(solution, warehouse).values()) 
         
 
 
 def calculate_all(population: List[AlgorithmOutput], warehouse: Warehouse) -> List[float]:  # albo float
-    #TODO wykonać calculate_times na wszystkich osobnikach
     return [calculate_one(sol, warehouse) for sol in population]
 
 
 def generate_random_solution(orders: Dict, warehouse: Warehouse) -> AlgorithmOutput:
-    solution = defaultdict(lambda: RobotRoute([], {}))
+    solution = {}
 
     graph = warehouse.graph
     robot_list = warehouse.robots
@@ -116,7 +110,7 @@ def generate_random_solution(orders: Dict, warehouse: Warehouse) -> AlgorithmOut
     picked_items = {item_id: 0 for item_id in orders}
 
     for robot in robot_list:
-        route = ['0']  #starting point for each robot
+        route = [0]  #starting point for each robot
         items = {}  #tracking gathered items
         curr_capacity = robot.load_capacity
 
@@ -139,23 +133,37 @@ def generate_random_solution(orders: Dict, warehouse: Warehouse) -> AlgorithmOut
             if amount_to_pick == 0:
                 continue
 
-            shortest_paths = nx.shortest_path(graph, route[-1], str(item_id))
+            shortest_paths = nx.shortest_path(graph, route[-1], item_id)
             route.extend(shortest_paths[1:])
 
-            items[str(item_id)] = int(amount_to_pick)
+            items[item_id] = int(amount_to_pick)
             curr_capacity -= amount_to_pick * weight_dict[item_id]
             picked_items[item_id] += amount_to_pick #tracking already picked items
 
-        shortest_paths = nx.shortest_path(graph, route[-1], '0') #return to starting point
+        shortest_paths = nx.shortest_path(graph, route[-1], 0) #return to starting point
         route.extend(shortest_paths[1:])
 
         solution[robot] = RobotRoute(route=route, items=items)
 
-    return solution
+    return AlgorithmOutput(solution)
 
 
-def generate_population(count: int) -> List[AlgorithmOutput]:
-    return [generate_random_solution() for i in range(count)]
+def generate_population(count: int, orders, warehouse) -> List[AlgorithmOutput]:
+    return [generate_random_solution(orders, warehouse) for _ in range(count)]
+
+
+def cut_zeros(solution: AlgorithmOutput):
+    for route in solution.result.values():
+        if len(route.route) > 1:
+            route.route.pop(0)
+            route.route.pop()
+
+
+def add_zeros(solution: AlgorithmOutput):
+    for route in solution.result.values():
+        if len(route.route) > 1:
+            route.route.insert(0, 0)
+            route.route.append(0)
 
 
 parents_to_population_rate = 2 / 3

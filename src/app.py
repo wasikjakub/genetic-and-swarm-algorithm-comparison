@@ -1,15 +1,14 @@
 import random
 from pathlib import Path
 from typing import List
-
 import networkx as nx
-
 # from algorithms.swarm import AntAlgorithm, transform_graph
 # from algorithms.swarm.ant import Ant
-from objects.robot import Robot, RobotSize
-from objects.warehouse import Warehouse
-
-from algorithms.genetics.other import generate_random_solution, calculate_one
+from src.algorithms.interface import Order
+from src.objects.robot import Robot, RobotSize
+from src.objects.warehouse import Warehouse
+from src.algorithms.genetics.other import generate_random_solution, calculate_one
+from src.algorithms.genetics.genetic import GeneticAlgorithm
 
 def order(num_items):
     # TODO zwrócić listę zamówień {id: licza sztuk, id2: liczba sztuk, ...}
@@ -53,7 +52,7 @@ def main():
 
 def mock_main():
     # graph = nx.read_adjlist('generated_graphs\graph_4_4.adjlist')
-    path = Path('generated_graphs\graph_4_4.adjlist')
+    path = Path('../generated_graphs\graph_4_4.adjlist')
 
     orders = {
         7: 5,
@@ -74,34 +73,15 @@ def mock_main():
 
     warehouse = Warehouse(
         txt_file=path, robots=robots)
+    warehouse.graph = nx.relabel_nodes(warehouse.graph, {n: int(n) for n in warehouse.graph})
+
+    GeneticAlg = GeneticAlgorithm(Order(orders), warehouse)
+    GeneticAlg.run(10, 5)
 
     solution = generate_random_solution(orders, warehouse)
 
     longest = calculate_one(solution, warehouse)
     print(longest)
-    # graph = transform_graph(graph, orders)
-    # ants = [
-    #     Ant(graph, max_capacity=10, velocity_factor=1),
-    #     Ant(graph, max_capacity=10, velocity_factor=1),
-    #     # Ant(graph, max_capacity=10, velocity_factor=1),
-    #     # Ant(graph, max_capacity=10, velocity_factor=1),
-    # ]
-
-    # alg = AntAlgorithm(graph, ants)
-    # solution = alg.solve(
-    #     iter=100,
-    #     alpha=0.1,
-    #     beta=0.1,
-    #     decay_rate=0.01
-    # )
-
-    # print("Best solution:", *[
-    #         'Ant {id}: total distance {total_distance:2d}, path {path}'.format(**log)  # noqa
-    #         for log in solution
-    #     ],
-    #     sep='\n'
-    # )
-    # print('yea')
 
 
 
