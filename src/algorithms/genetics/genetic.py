@@ -12,6 +12,7 @@ class GeneticAlgorithm:
         self.population = population  # [(AlgorithmOutput, cost)]
         self.weights = get_weights(self.order.items)  # {item: weight}
         self.best_solution = ()  # (solution, cost)
+        self.best_list = []
 
     def run(self, max_iter, population_count, mutation_rate=0.2):
         self.warehouse.graph = change_graph(self.warehouse.graph, self.order)
@@ -26,6 +27,7 @@ class GeneticAlgorithm:
         self.population.sort(key=lambda tup: tup[1])
         for i in range(max_iter):
             self.single_iteration(mutation_rate)
+            self.best_list.append(self.population[0][1])
             if self.best_solution == () or self.best_solution[1] > self.population[0][1]:
                 self.best_solution = self.population[0]
 

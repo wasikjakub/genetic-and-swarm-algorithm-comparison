@@ -52,7 +52,7 @@ def main():
 
 def mock_main():
     # graph = nx.read_adjlist('generated_graphs\graph_4_4.adjlist')
-    path = Path('D:\semestr_8\GUiIO\projekt\deep_learning\generated_graphs\graph_4_4.adjlist')
+    path = Path('..\generated_graphs\graph_4_4.adjlist')
 
     orders = {
         7: 5,
@@ -76,12 +76,13 @@ def mock_main():
     warehouse.graph = nx.relabel_nodes(warehouse.graph, {n: int(n) for n in warehouse.graph})
 
     GeneticAlg = GeneticAlgorithm(Order(orders), warehouse)
-    GeneticAlg.run(10, 5)
+    GeneticAlg.run(20, 10)
 
     solution = generate_random_solution(orders, warehouse)
 
     # longest = calculate_one(solution, warehouse)
     print(GeneticAlg.best_solution)
+    print(GeneticAlg.best_list)
 
 
 

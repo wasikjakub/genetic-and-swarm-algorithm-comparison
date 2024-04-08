@@ -53,6 +53,8 @@ def crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: O
         new_solution.result[robot] = temp_robot_route
     fill_routes(new_solution, Order(items_left), weights, warehouse)
     add_zeros(new_solution)
+    add_zeros(parent1)
+    add_zeros(parent2)
     return new_solution
 
 

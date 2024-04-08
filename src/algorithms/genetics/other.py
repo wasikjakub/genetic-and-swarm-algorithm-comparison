@@ -169,9 +169,9 @@ def cut_zeros(solution: AlgorithmOutput):
 
 def add_zeros(solution: AlgorithmOutput):
     for route in solution.result.values():
-        if len(route.route) > 1:
-            route.route.insert(0, 0)
-            route.route.append(0)
+        # if len(route.route) > 1:
+        route.route.insert(0, 0)
+        route.route.append(0)
 
 
 parents_to_population_rate = 2 / 3
