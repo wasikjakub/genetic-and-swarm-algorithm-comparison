@@ -4,11 +4,11 @@ from typing import List
 import networkx as nx
 # from algorithms.swarm import AntAlgorithm, transform_graph
 # from algorithms.swarm.ant import Ant
-from src.algorithms.interface import Order
-from src.objects.robot import Robot, RobotSize
-from src.objects.warehouse import Warehouse
-from src.algorithms.genetics.other import generate_random_solution, calculate_one
-from src.algorithms.genetics.genetic import GeneticAlgorithm
+from algorithms.interface import Order
+from objects.robot import Robot, RobotSize
+from objects.warehouse import Warehouse
+from algorithms.genetics.other import generate_random_solution, calculate_one
+from algorithms.genetics.genetic import GeneticAlgorithm
 
 def order(num_items):
     # TODO zwrócić listę zamówień {id: licza sztuk, id2: liczba sztuk, ...}
@@ -52,7 +52,7 @@ def main():
 
 def mock_main():
     # graph = nx.read_adjlist('generated_graphs\graph_4_4.adjlist')
-    path = Path('../generated_graphs\graph_4_4.adjlist')
+    path = Path('D:\semestr_8\GUiIO\projekt\deep_learning\generated_graphs\graph_4_4.adjlist')
 
     orders = {
         7: 5,
@@ -80,7 +80,7 @@ def mock_main():
 
     solution = generate_random_solution(orders, warehouse)
 
-    longest = calculate_one(solution, warehouse)
+    longest = calculate_one(solution, warehouse, orders)
     print(longest)
 
 

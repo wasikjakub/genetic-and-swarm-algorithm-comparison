@@ -1,17 +1,17 @@
 import networkx as nx
 import random
-from src.objects.robot import Robot
-from src.algorithms.interface import AlgorithmOutput, Order, RobotRoute
+from objects.robot import Robot
+from algorithms.interface import AlgorithmOutput, Order, RobotRoute
 from typing import Dict, List, Tuple
-from src.objects.warehouse import Warehouse
+from objects.warehouse import Warehouse
 from math import ceil
 
-from src.algorithms.genetics.transform_graph import change_graph
+from algorithms.genetics.transform_graph import change_graph
 
 
-def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int, int], warehouse):
+def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int, int], warehouse, orders):
     for i, quantity in items_left.items.items():
-        times = calculate_times(solution, warehouse)
+        times = calculate_times(solution, warehouse, orders)
         subtracted = 0
         for k in range(len(times)):
             temp_robot = min(times, key=times.get)
@@ -64,19 +64,29 @@ def rank_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
     return [solution[0] for solution in population[:solutions_to_take]]
 
 
-def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot, float]: #must be float since distance is normalised
+def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse, orders: Order) -> Dict[Robot, float]: #must be float since distance is normalised
     distance_dict = {}
 
-    graph_transformed = change_graph(warehouse.graph)
+    print(type(orders))
+
+    graph_transformed = change_graph(warehouse.graph, orders)
     distance_dict_norm = nx.get_edge_attributes(graph_transformed, 'distance_norm')
 
-    for robot, (route, _) in robots.result.items():
-        
+    distance_dict_norm = {tuple(int(key) for key in keys): value for keys, value in distance_dict_norm.items()}
+
+    for robot, (route, _) in robots.result.items():     
+
         total_distance = 0
 
         for i in range(len(route) - 1):
+
+            if route == [0, 0]:
+                break
+
             u = route[i]
             v = route[i+1]
+
+            # total_distance += distance_dict_norm[(u, v)]
 
             try:
                 total_distance += distance_dict_norm[(u, v)]
@@ -90,16 +100,16 @@ def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot
     return times_dict
 
 
-def calculate_one(solution: AlgorithmOutput, warehouse: Warehouse) -> float: #assumed that it's robot id?
-    return max(calculate_times(solution, warehouse).values()) 
+def calculate_one(solution: AlgorithmOutput, warehouse: Warehouse, orders: Order) -> float: #assumed that it's robot id?
+    return max(calculate_times(solution, warehouse, orders).values()) 
         
 
 
-def calculate_all(population: List[AlgorithmOutput], warehouse: Warehouse) -> List[float]:  # albo float
-    return [calculate_one(sol, warehouse) for sol in population]
+def calculate_all(population: List[AlgorithmOutput], warehouse: Warehouse, orders: Order) -> List[float]:  # albo float
+    return [calculate_one(sol, warehouse, orders) for sol in population]
 
 
-def generate_random_solution(orders: Dict, warehouse: Warehouse) -> AlgorithmOutput:
+def generate_random_solution(orders: Order, warehouse: Warehouse) -> AlgorithmOutput:
     solution = {}
 
     graph = warehouse.graph
@@ -133,15 +143,15 @@ def generate_random_solution(orders: Dict, warehouse: Warehouse) -> AlgorithmOut
             if amount_to_pick == 0:
                 continue
 
-            shortest_paths = nx.shortest_path(graph, route[-1], item_id)
-            route.extend(shortest_paths[1:])
+            # shortest_paths = nx.shortest_path(graph, route[-1], item_id)
+            route.append(item_id)
 
             items[item_id] = int(amount_to_pick)
             curr_capacity -= amount_to_pick * weight_dict[item_id]
             picked_items[item_id] += amount_to_pick #tracking already picked items
 
-        shortest_paths = nx.shortest_path(graph, route[-1], 0) #return to starting point
-        route.extend(shortest_paths[1:])
+        # shortest_paths = nx.shortest_path(graph, route[-1], 0) #return to starting point
+        route.append(0)
 
         solution[robot] = RobotRoute(route=route, items=items)
 

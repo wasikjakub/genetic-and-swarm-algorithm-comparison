@@ -1,7 +1,7 @@
 import random
 from math import ceil
-from src.algorithms.genetics.operators import crossover, mutate
-from src.algorithms.genetics.other import generate_population, calculate_all, rank_selection,\
+from algorithms.genetics.operators import crossover, mutate
+from algorithms.genetics.other import generate_population, calculate_all, rank_selection,\
     calculate_one, parents_to_population_rate, get_weights
 
 
@@ -17,7 +17,7 @@ class GeneticAlgorithm:
         if self.population is None:
             self.population = []
             population = generate_population(population_count, self.order.items, self.warehouse)
-            costs = calculate_all(population, self.warehouse)
+            costs = calculate_all(population, self.warehouse, self.order)
             for i in range(len(population)):
                 self.population.append((population[i], costs[i]))
 
@@ -32,7 +32,9 @@ class GeneticAlgorithm:
     def single_iteration(self, mutation_rate):
         temp_population = self.population[:int(ceil(len(self.population) * parents_to_population_rate))]
         to_crossover = rank_selection(self.population)
-        for j in range(len(to_crossover)):
+        for j in range(len(self.population)-len(temp_population)):
+            # if len(to_crossover) < 2:
+            #     break
             parents = random.sample(to_crossover, 2)
             to_crossover.remove(parents[0])
             to_crossover.remove(parents[1])
@@ -43,7 +45,7 @@ class GeneticAlgorithm:
             if random.randrange(0, 1) < mutation_rate:
                 mutate(child, len(child.result) // 2 + 1)  # can be changed
 
-            cost = calculate_one(child, self.warehouse)
+            cost = calculate_one(child, self.warehouse, self.order)
             temp_population.append((child, cost))
             temp_population.sort(key=lambda tup: tup[1])
             self.population = temp_population

@@ -1,9 +1,9 @@
 import random
 import copy
 from typing import Dict
-from src.algorithms.interface import RobotRoute, AlgorithmOutput, Order
-from src.objects.robot import Robot
-from src.algorithms.genetics.other import fill_routes, cut_zeros, add_zeros
+from algorithms.interface import RobotRoute, AlgorithmOutput, Order
+from objects.robot import Robot
+from algorithms.genetics.other import fill_routes, cut_zeros, add_zeros
 
 
 def crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: Order, weights: Dict[int, int], warehouse)\
@@ -51,7 +51,7 @@ def crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: O
                         temp_robot_route.items[node] = quantity
                         items_left[node] = items_left[node] - quantity
         new_solution.result[robot] = temp_robot_route
-    fill_routes(new_solution, Order(items_left), weights, warehouse)
+    fill_routes(new_solution, Order(items_left), weights, warehouse, order_items)
     add_zeros(new_solution)
     return new_solution
 
