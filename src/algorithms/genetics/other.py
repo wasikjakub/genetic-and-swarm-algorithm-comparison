@@ -9,9 +9,9 @@ from math import ceil
 from algorithms.genetics.transform_graph import change_graph
 
 
-def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int, int], warehouse, orders):
+def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int, int], warehouse):
     for i, quantity in items_left.items.items():
-        times = calculate_times(solution, warehouse, orders)
+        times = calculate_times(solution, warehouse)
         subtracted = 0
         for k in range(len(times)):
             temp_robot = min(times, key=times.get)
@@ -64,12 +64,10 @@ def rank_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
     return [solution[0] for solution in population[:solutions_to_take]]
 
 
-def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse, orders: Order) -> Dict[Robot, float]: #must be float since distance is normalised
+def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot, float]: #must be float since distance is normalised
     distance_dict = {}
 
-    print(type(orders))
-
-    graph_transformed = change_graph(warehouse.graph, orders)
+    graph_transformed = warehouse.graph
     distance_dict_norm = nx.get_edge_attributes(graph_transformed, 'distance_norm')
 
     distance_dict_norm = {tuple(int(key) for key in keys): value for keys, value in distance_dict_norm.items()}
@@ -100,13 +98,13 @@ def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse, orders: Order
     return times_dict
 
 
-def calculate_one(solution: AlgorithmOutput, warehouse: Warehouse, orders: Order) -> float: #assumed that it's robot id?
-    return max(calculate_times(solution, warehouse, orders).values()) 
+def calculate_one(solution: AlgorithmOutput, warehouse: Warehouse) -> float: #assumed that it's robot id?
+    return max(calculate_times(solution, warehouse).values()) 
         
 
 
-def calculate_all(population: List[AlgorithmOutput], warehouse: Warehouse, orders: Order) -> List[float]:  # albo float
-    return [calculate_one(sol, warehouse, orders) for sol in population]
+def calculate_all(population: List[AlgorithmOutput], warehouse: Warehouse) -> List[float]:  # albo float
+    return [calculate_one(sol, warehouse) for sol in population]
 
 
 def generate_random_solution(orders: Order, warehouse: Warehouse) -> AlgorithmOutput:

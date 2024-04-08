@@ -80,8 +80,8 @@ def mock_main():
 
     solution = generate_random_solution(orders, warehouse)
 
-    longest = calculate_one(solution, warehouse, orders)
-    print(longest)
+    # longest = calculate_one(solution, warehouse)
+    print(GeneticAlg.best_solution)
 
 
 

@@ -3,7 +3,7 @@ from math import ceil
 from algorithms.genetics.operators import crossover, mutate
 from algorithms.genetics.other import generate_population, calculate_all, rank_selection,\
     calculate_one, parents_to_population_rate, get_weights
-
+from algorithms.genetics.transform_graph import change_graph
 
 class GeneticAlgorithm:
     def __init__(self, order, warehouse, population=None) -> None:
@@ -14,10 +14,12 @@ class GeneticAlgorithm:
         self.best_solution = ()  # (solution, cost)
 
     def run(self, max_iter, population_count, mutation_rate=0.2):
+        self.warehouse.graph = change_graph(self.warehouse.graph, self.order)
+
         if self.population is None:
             self.population = []
             population = generate_population(population_count, self.order.items, self.warehouse)
-            costs = calculate_all(population, self.warehouse, self.order)
+            costs = calculate_all(population, self.warehouse)
             for i in range(len(population)):
                 self.population.append((population[i], costs[i]))
 
@@ -45,7 +47,7 @@ class GeneticAlgorithm:
             if random.randrange(0, 1) < mutation_rate:
                 mutate(child, len(child.result) // 2 + 1)  # can be changed
 
-            cost = calculate_one(child, self.warehouse, self.order)
+            cost = calculate_one(child, self.warehouse)
             temp_population.append((child, cost))
             temp_population.sort(key=lambda tup: tup[1])
             self.population = temp_population
