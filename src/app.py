@@ -1,11 +1,14 @@
 import json
 from pathlib import Path
 import networkx as nx
+import matplotlib
+matplotlib.use('TkAgg')
 
 from algorithms.swarm import AntAlgorithm
+from plots import plot_loss_fn, plot_all_robot_paths
 from objects import Robot, Warehouse
 
-INPUT_DATA_DIR = Path('../input_data')
+INPUT_DATA_DIR = Path('/app/input_data')
 
 
 def test_case_1():
@@ -17,6 +20,11 @@ def test_case_1():
 
     graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
 
+    return sizes, order, graph
+
+def main(test_case):
+    sizes, order, graph = test_case()
+
     robots = [
         Robot(f'{i+1}', size)
         for i, size in enumerate(sizes)
@@ -25,13 +33,17 @@ def test_case_1():
     order = {int(k): v for k, v in order.items()}
 
     alg = AntAlgorithm.from_input_data(order, warehouse)
-    alg.solve(
+    solution = alg.solve(
         iter=1000,
         alpha=0.1,
         beta=0.1,
         decay_rate=0.01
     )
 
-    # here will be generating plots script etc.
+    plot_all_robot_paths(solution, alg.graph)
+    plot_loss_fn(alg.runtime_data)
 
     return alg
+
+if __name__ == '__main__':
+    main(test_case_1)
