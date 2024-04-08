@@ -1,3 +1,4 @@
+from typing import Union
 from enum import Enum
 
 class RobotSize(Enum):
@@ -11,10 +12,11 @@ class RobotSizeError(Exception):
         super().__init__(self.message)
 
 class Robot:
-    def __init__(self, id: str, size: RobotSize = RobotSize.SMALL) -> None:
+    def __init__(self, id: str, size: Union[RobotSize, str] = RobotSize.SMALL) -> None:
+        if isinstance(size, str):
+            size = [matching_size for matching_size in RobotSize if size == matching_size.value][0]
+
         self.id = id
-        if not isinstance(size, RobotSize):
-            raise RobotSizeError
         self.size = size
         self.load_capacity = self.calculate_capacity()
         self.velocity = self.calculate_velocity()

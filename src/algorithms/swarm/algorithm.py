@@ -10,10 +10,7 @@ from .ant import START_NODE, Ant
 
 
 class AntAlgorithm:
-    MINMAX = True
-
-    MAX_ITER = 1000
-    MINMAX_NO_IMPROVEMENT_ITER_RESET = 20
+    MAX_ITER = 10_000
 
     def __init__(self, graph: nx.Graph, ants: List[Ant]) -> None:
         self.graph = graph
@@ -37,13 +34,6 @@ class AntAlgorithm:
         best_score = np.inf
         best_solution = None
 
-        it_to_reset_minmax = self.MINMAX_NO_IMPROVEMENT_ITER_RESET
-
-        if self.MINMAX:
-            self.set_max_pheromone()
-
-        self.update_pheromone = self.update_pheromone_minmax if self.MINMAX else self.update_pheromone_classic
-
         for it in range(iter):
             result = self.simulate()
 
@@ -63,21 +53,10 @@ class AntAlgorithm:
                 self.runtime_data['best_solutions'].append(best_solution)
                 self.runtime_data['best_scores'].append((it, best_score))
 
-                if self.MINMAX:
-                    it_to_reset_minmax = self.MINMAX_NO_IMPROVEMENT_ITER_RESET
-                    self.update_edge_load()
-
                 print(f'Found better score {best_score} in iteration {it}')
 
             self.update_pheromone(decay_rate)
             self.update_probs(alpha, beta)
-
-            if self.MINMAX:
-                it_to_reset_minmax -= 1
-
-                if it_to_reset_minmax <= 0:
-                    it_to_reset_minmax = self.MINMAX_NO_IMPROVEMENT_ITER_RESET
-                    self.set_max_pheromone()
 
             self.reset_iter_state()
 
@@ -95,21 +74,14 @@ class AntAlgorithm:
         })
 
     def set_max_pheromone(self):
-        for u, v in self.graph.edges():
-            nx.set_edge_attributes(self.graph, {
-                (u, v): {
-                    'pheromone': 1,
-                }
-            })
+        nx.set_edge_attributes(self.graph, {
+            (u, v): {
+                'pheromone': 1,
+            }
+            for u, v in self.graph.edges()
+        })
 
-    def update_pheromone_minmax(self, decay_rate: float) -> None:
-        for u, v in self.graph.edges():
-            updated_pheromone = (1 - decay_rate) * self.graph[u][v]['pheromone'] + self.graph[u][v]['load_fraction']  # noqa
-            updated_pheromone = np.clip(updated_pheromone, 0, 1)
-
-            self.graph[u][v]['pheromone'] = updated_pheromone
-
-    def update_pheromone_classic(self, decay_rate: float) -> None:
+    def update_pheromone(self, decay_rate: float) -> None:
         self.update_edge_load()
 
         for u, v in self.graph.edges():
@@ -164,7 +136,7 @@ class AntAlgorithm:
             i += 1
 
             if i > self.MAX_ITER:
-                raise TimeoutError()
+                raise StopIteration("Maximum iteration count exceeded.")
 
         score = max(
             ant.runtime_data['total_distance'] / ant.velocity_factor
@@ -188,7 +160,7 @@ class AntAlgorithm:
         return weights_left <= 0 and all(ants_returned)
 
     @classmethod
-    def from_orders_warehouse(cls, orders, warehouse: Warehouse):
+    def from_input_data(cls, orders, warehouse: Warehouse):
         graph = transform_graph(warehouse.graph, orders)
         ants = [
             Ant(
