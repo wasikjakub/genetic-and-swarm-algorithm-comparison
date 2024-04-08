@@ -5,7 +5,7 @@ import networkx as nx
 from algorithms.swarm import AntAlgorithm
 from objects import Robot, Warehouse
 
-INPUT_DATA_DIR = Path('../input_data')
+INPUT_DATA_DIR = Path('input_data')
 
 
 def test_case_1():
@@ -35,3 +35,6 @@ def test_case_1():
     # here will be generating plots script etc.
 
     return alg
+
+if __name__ == '__main__':
+    test_case_1()
