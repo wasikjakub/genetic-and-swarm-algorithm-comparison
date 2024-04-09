@@ -10,78 +10,20 @@ matplotlib.use('TkAgg')
 
 INPUT_DATA_DIR = Path('/app/input_data')
 
-
-def test_case_1():
-    with open(INPUT_DATA_DIR / 'robots/robots1.json', 'r') as f:
+def test_case(link_to_robots, link_to_orders, link_to_graph='graphs/10_10.adjlist'):
+    with open(INPUT_DATA_DIR / link_to_robots, 'r') as f:
         sizes = json.load(f)
 
-    with open(INPUT_DATA_DIR / 'orders/order1.json', 'r') as f:
+    with open(INPUT_DATA_DIR / link_to_orders, 'r') as f:
         order = json.load(f)
 
-    graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
+    graph = nx.read_adjlist(INPUT_DATA_DIR / link_to_graph)
 
     return sizes, order, graph
 
-def test_case_2():
-    with open(INPUT_DATA_DIR / 'robots/robots2.json', 'r') as f:
-        sizes = json.load(f)
-
-    with open(INPUT_DATA_DIR / 'orders/order1.json', 'r') as f:
-        order = json.load(f)
-
-    graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
-
-    return sizes, order, graph
-
-def test_case_3():
-    with open(INPUT_DATA_DIR / 'robots/robots3.json', 'r') as f:
-        sizes = json.load(f)
-
-    with open(INPUT_DATA_DIR / 'orders/order1.json', 'r') as f:
-        order = json.load(f)
-
-    graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
-
-    return sizes, order, graph
-
-
-def test_case_4():
-    with open(INPUT_DATA_DIR / 'robots/robots4.json', 'r') as f:
-        sizes = json.load(f)
-
-    with open(INPUT_DATA_DIR / 'orders/order2.json', 'r') as f:
-        order = json.load(f)
-
-    graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
-
-    return sizes, order, graph
-
-
-def test_case_5():
-    with open(INPUT_DATA_DIR / 'robots/robots5.json', 'r') as f:
-        sizes = json.load(f)
-
-    with open(INPUT_DATA_DIR / 'orders/order2.json', 'r') as f:
-        order = json.load(f)
-
-    graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
-
-    return sizes, order, graph
-
-def test_case_6():
-    with open(INPUT_DATA_DIR / 'robots/robots6.json', 'r') as f:
-        sizes = json.load(f)
-
-    with open(INPUT_DATA_DIR / 'orders/order2.json', 'r') as f:
-        order = json.load(f)
-
-    graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
-
-    return sizes, order, graph
-
-def main(test_case, index):
+def main(test_case, index, link_to_robots, link_to_orders):
     
-    sizes, order, graph = test_case()
+    sizes, order, graph = test_case(link_to_robots, link_to_orders)
 
     robots = [
         Robot(f'{i+1}', size)
@@ -105,9 +47,8 @@ def main(test_case, index):
 
 
 if __name__ == '__main__':
-    main(test_case_1, 1)
-    main(test_case_2, 2)
-    main(test_case_3, 3)
-    main(test_case_4, 4)
-    main(test_case_5, 5)
-    main(test_case_6, 6)
+    test_robots = ['robots/robots1.json', 'robots/robots2.json', 'robots/robots3.json', 'robots/robots4.json', 'robots/robots5.json', 'robots/robots6.json']
+    test_orders = ['orders/order1.json', 'orders/order1.json', 'orders/order1.json', 'orders/order2.json', 'orders/order2.json', 'orders/order2.json']
+    for i in range(6):
+        main(test_case=test_case, index=i+1, link_to_robots=test_robots[i], link_to_orders=test_orders[i])
+    
