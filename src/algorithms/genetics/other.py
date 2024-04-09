@@ -42,6 +42,7 @@ def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int,
 def get_weights(orders: Dict) -> Dict:
     weight_dict = {}
     weight_range = [0.2, 0.2, 0.3, 0.4, 0.5] #adjust as needed
+    # weight_range = [2, 1, 1.5, 3]
     index = 0
 
     for item_id in orders.keys():
@@ -68,7 +69,7 @@ def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot
     distance_dict = {}
 
     graph_transformed = warehouse.graph
-    distance_dict_norm = nx.get_edge_attributes(graph_transformed, 'distance_norm')
+    distance_dict_norm = nx.get_edge_attributes(graph_transformed, 'distance')
 
     distance_dict_norm = {tuple(int(key) for key in keys): value for keys, value in distance_dict_norm.items()}
 
