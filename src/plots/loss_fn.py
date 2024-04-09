@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 
 
-def plot_loss_fn(runtime_data):
+def plot_loss_fn(runtime_data, index):
+    plt.figure(figsize=(10, 6))
     data = runtime_data['best_scores']
     data.append(
         (runtime_data['params']['iter'], runtime_data['best_scores'][-1][1]))
@@ -13,4 +14,5 @@ def plot_loss_fn(runtime_data):
     plt.xlabel('Iterations')
     plt.ylabel('Score')
 
-    plt.show()
+    plt.savefig(f'/workspaces/deep_learning/src/outputs/loss_fn{index}.png')
+    # plt.show()
