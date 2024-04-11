@@ -132,6 +132,10 @@ def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot
         total_distance = 0
 
         for i in range(len(route) - 1):
+
+            if route == [0, 0]:
+                break
+            
             u = route[i]
             v = route[i+1]
 
