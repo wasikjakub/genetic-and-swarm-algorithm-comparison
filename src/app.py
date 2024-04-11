@@ -10,28 +10,32 @@ from objects.warehouse import Warehouse
 from algorithms.genetics.other import generate_random_solution
 from algorithms.genetics.genetic import GeneticAlgorithm
 from algorithms.swarm import AntAlgorithm
+import argparse
 
-INPUT_DATA_DIR = Path('D:\\semestr_8\\GUiIO\\projekt\\deep_learning\\input_data')
+INPUT_DATA_DIR = Path('C:\\Users\\arkre\\OneDrive\\Pulpit\\deep_learning\\input_data')
 
-def test_genetic():
+def test_genetic(selection_method):
     with open(INPUT_DATA_DIR / 'robots/robotsg2.json', 'r') as f:
         sizes = json.load(f)
-
+    print(f"sizes:{sizes}")
     with open(INPUT_DATA_DIR / 'orders/order2.json', 'r') as f:
         order = json.load(f)
-
+    print(f"order:{order}")
     graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
-
+    print(f"graph:{graph}")
     robots = [
         Robot(f'{i+1}', size)
         for i, size in enumerate(sizes)
     ]
+    print(f"robots:{robots[0]}")
     warehouse = Warehouse(graph, robots)
+    print(f"warehouse:{warehouse.robots[0]}")
     order = {int(k): v for k, v in order.items()}
-
+    print(f"order:{order}")
     warehouse.graph = nx.relabel_nodes(warehouse.graph, {n: int(n) for n in warehouse.graph})
-
-    GeneticAlg = GeneticAlgorithm(Order(order), warehouse)
+    print(f"warehouse.graph:{warehouse.graph}")
+    GeneticAlg = GeneticAlgorithm(Order(order), warehouse, selection_method)
+    print(f"Order(order): {Order(order)}")
     GeneticAlg.run(100, 10)
 
 
@@ -82,5 +86,8 @@ def test_case_1():
 
 
 if __name__ == '__main__':
-    test_genetic()
+    parser = argparse.ArgumentParser(description="enter flag for selection method")
+    parser.add_argument('--selection', choices=['rank', 'tournament', 'roulette', 'proportional'], default='rank', help='Selection method')
+    args = parser.parse_args()
+    test_genetic(args.selection)
     # test_case_1()

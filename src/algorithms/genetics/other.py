@@ -8,7 +8,6 @@ from math import ceil
 
 from algorithms.genetics.transform_graph import change_graph
 
-
 def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int, int], warehouse):
     for i, quantity in items_left.items.items():
         times = calculate_times(solution, warehouse)
@@ -61,11 +60,66 @@ def capacity_left(robot: Robot, route: RobotRoute, weights: Dict[int, int]) -> i
 
 def rank_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
     solutions_to_take = int(ceil(len(population) * parents_to_population_rate))  # I want to take 2/3 of the solutions
+    selected_individuals = [solution[0] for solution in population[:solutions_to_take]]
 
-    return [solution[0] for solution in population[:solutions_to_take]]
+    return selected_individuals
+
+def tournament_selection(population: List[Tuple], tournament_size: int, parents_to_population_rate: float = 2/3) -> List[AlgorithmOutput]:
+    solutions_to_take = int(ceil(len(population) * parents_to_population_rate))
+    selected_individuals = []
+
+    while len(selected_individuals) < solutions_to_take:
+        tournament_indices = random.sample(range(len(population)), tournament_size)
+        tournament_solutions = [population[i][0] for i in tournament_indices]
+
+        # Choosing the best solution based on the length of the route - solution with shortest route 
+        best_solution = min(tournament_solutions, key=lambda x: sum(sum(route.items.values()) for route in x.result.values()))
+
+        selected_individuals.append(best_solution)
+        
+        if len(selected_individuals) >= solutions_to_take:
+            break
+
+    return selected_individuals
+
+def roulette_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
+    solutions_to_take = int(ceil(len(population) * parents_to_population_rate))
+    total_fitness = sum(1 / fitness for _, fitness in population)
+    selected_individuals = []
+
+    while len(selected_individuals) < solutions_to_take:
+        selected_fitness = random.uniform(0, total_fitness)
+        current_sum = 0
+
+        for solution, fitness in population:
+            current_sum += 1 / fitness
+            if current_sum > selected_fitness:
+                selected_individuals.append(solution)
+                break
+    
+    return selected_individuals
+
+def modified_proportional_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
+    solutions_to_take = int(ceil(len(population) * parents_to_population_rate))
+    fitness_value = [fitness for _, fitness in population]
+    total_fitness = sum(fitness_value)
+    selected_individuals = []
+
+    while len(selected_individuals) < solutions_to_take:
+        selected_fitness = random.uniform(0, total_fitness)
+        selected_range = random.uniform(0, total_fitness)
+        cumulative_probability = 0
+
+        for solution, fitness in population:
+            cumulative_probability = fitness / total_fitness
+            if cumulative_probability >= selected_fitness and cumulative_probability <= selected_range:
+                selected_individuals.append(solution)
+                break
+    
+    return selected_individuals
 
 
-def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot, float]: #must be float since distance is normalised
+def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot, float]:
     distance_dict = {}
 
     graph_transformed = warehouse.graph
@@ -73,29 +127,28 @@ def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot
 
     distance_dict_norm = {tuple(int(key) for key in keys): value for keys, value in distance_dict_norm.items()}
 
-    for robot, (route, _) in robots.result.items():     
+    for robot, (route, _) in robots.result.items():
 
         total_distance = 0
 
         for i in range(len(route) - 1):
-
-            if route == [0, 0]:
-                break
-
             u = route[i]
             v = route[i+1]
 
-            # total_distance += distance_dict_norm[(u, v)]
-
+            # check if edge exists
             try:
-                total_distance += distance_dict_norm[(u, v)]
+                if u != v:
+                    total_distance += distance_dict_norm[(u, v)]
             except KeyError:
-                total_distance += distance_dict_norm[(v, u)]
+                try:
+                    if u != v:
+                        total_distance += distance_dict_norm[(v, u)]
+                except KeyError:
+                    print(f"Edge ({u}, {v}) or ({v}, {u}) does not exist.")
 
         distance_dict[robot] = float("{:.2f}".format(total_distance))
-    
-    times_dict = {robot: float("{:.2f}".format(distance_dict[robot] * robot.calculate_velocity())) for robot in distance_dict.keys()}
 
+    times_dict = {robot: float("{:.2f}".format(distance_dict[robot] * robot.calculate_velocity())) for robot in distance_dict.keys()}
     return times_dict
 
 

@@ -2,17 +2,18 @@ import random
 from math import ceil
 from algorithms.genetics.operators import crossover, mutate
 from algorithms.genetics.other import generate_population, calculate_all, rank_selection,\
-    calculate_one, parents_to_population_rate, get_weights
+    calculate_one, parents_to_population_rate, get_weights, tournament_selection, roulette_selection, modified_proportional_selection
 from algorithms.genetics.transform_graph import change_graph
 
 class GeneticAlgorithm:
-    def __init__(self, order, warehouse, population=None) -> None:
+    def __init__(self, order, warehouse, selection_method, population=None) -> None:
         self.order = order
         self.warehouse = warehouse
         self.population = population  # [(AlgorithmOutput, cost)]
         self.weights = get_weights(self.order.items)  # {item: weight}
         self.best_solution = ()  # (solution, cost)
         self.best_list = []
+        self.selection = selection_method
 
     def run(self, max_iter, population_count, mutation_rate=0.2):
         self.warehouse.graph = change_graph(self.warehouse.graph, self.order)
@@ -25,7 +26,7 @@ class GeneticAlgorithm:
                 self.population.append((population[i], costs[i]))
 
         self.population.sort(key=lambda tup: tup[1])
-        for i in range(max_iter):
+        for _ in range(max_iter):
             self.single_iteration(mutation_rate)
             self.best_list.append(self.population[0][1])
             if self.best_solution == () or self.best_solution[1] > self.population[0][1]:
@@ -35,8 +36,15 @@ class GeneticAlgorithm:
 
     def single_iteration(self, mutation_rate):
         temp_population = self.population[:int(ceil(len(self.population) * parents_to_population_rate))]
-        to_crossover = rank_selection(self.population)
-        for j in range(len(self.population)-len(temp_population)):
+        if self.selection == 'rank':
+            to_crossover = rank_selection(self.population)
+        elif self.selection == 'tournament':
+            to_crossover = tournament_selection(self.population, tournament_size=2)
+        elif self.selection == 'roulette':
+            to_crossover = roulette_selection(self.population)
+        elif self.selection == 'proportional':
+            to_crossover = modified_proportional_selection(self.population)
+        for _ in range(len(self.population)-len(temp_population)):
             # if len(to_crossover) < 2:
             #     break
             parents = random.sample(to_crossover, 2)
