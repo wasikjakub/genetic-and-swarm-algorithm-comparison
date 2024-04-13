@@ -10,8 +10,11 @@ from algorithms.genetics.genetic import GeneticAlgorithm
 from algorithms.swarm import AntAlgorithm
 import argparse
 from tabulate import tabulate
+from pathlib import Path
 
-INPUT_DATA_DIR = Path('C:\\Users\\arkre\\OneDrive\\Pulpit\\deep_learning\\input_data')
+# Path to directory with input data for algorithms
+APP_DIR = Path(__file__).resolve().parent
+INPUT_DATA_DIR = APP_DIR.parent / 'input_data'
 
 def test_genetic(selection_method: str, mutation_method: str, iterations_number: int, population: int):
     """
@@ -22,7 +25,7 @@ def test_genetic(selection_method: str, mutation_method: str, iterations_number:
     :param iterations_number: The maximum number of iterations for the genetic algorithm.
     :param population: The initial population size for the genetic algorithm.
     """
-    # Load necessary objects
+    # Load necessary data about available robots and current order
     with open(INPUT_DATA_DIR / 'robots/robotsg2.json', 'r') as f:
         sizes = json.load(f)
 
