@@ -14,7 +14,7 @@ import argparse
 
 INPUT_DATA_DIR = Path('C:\\Users\\arkre\\OneDrive\\Pulpit\\deep_learning\\input_data')
 
-def test_genetic(selection_method):
+def test_genetic(selection_method: str, iterations_number: int, population: int):
     with open(INPUT_DATA_DIR / 'robots/robotsg2.json', 'r') as f:
         sizes = json.load(f)
     print(f"sizes:{sizes}")
@@ -36,8 +36,9 @@ def test_genetic(selection_method):
     print(f"warehouse.graph:{warehouse.graph}")
     GeneticAlg = GeneticAlgorithm(Order(order), warehouse, selection_method)
     print(f"Order(order): {Order(order)}")
-    GeneticAlg.run(100, 10)
-
+    GeneticAlg.run(max_iter=iterations_number, population_count=population)
+    print("---------------------------")
+    print(f"selection: {selection_method}, iterations: {iterations_number}, population: {population}")
 
     # longest = calculate_one(solution, warehouse)
     # print(GeneticAlg.best_solution)    
@@ -86,8 +87,10 @@ def test_case_1():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="enter flag for selection method")
-    parser.add_argument('--selection', choices=['rank', 'tournament', 'roulette', 'proportional'], default='rank', help='Selection method')
+    parser = argparse.ArgumentParser(description="Enter flags for various algorithms fields:")
+    parser.add_argument('-s', '--selection', choices=['rank', 'tournament', 'roulette', 'proportional'], default='rank', help='Selection method')
+    parser.add_argument('-i', '--iterations', default=100, type=int, help='Iteratiions number of genetic algorithm')
+    parser.add_argument('-p', '--population', default=10, type=int, help='Initial population size')
     args = parser.parse_args()
-    test_genetic(args.selection)
+    test_genetic(args.selection, args.iterations, args.population)
     # test_case_1()
