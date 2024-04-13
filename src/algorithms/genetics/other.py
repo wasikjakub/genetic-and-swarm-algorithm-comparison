@@ -59,12 +59,27 @@ def capacity_left(robot: Robot, route: RobotRoute, weights: Dict[int, int]) -> i
 
 
 def rank_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
+    """
+    Select individuals from the population based on rank selection.
+
+    :param population: A list of tuples containing solutions and their fitness values.
+    :param parents_to_population_rate: The ratio of parents to the population size.
+    :return: A list of selected AlgorithmOutput solutions.
+    """
     solutions_to_take = int(ceil(len(population) * parents_to_population_rate))  # I want to take 2/3 of the solutions
     selected_individuals = [solution[0] for solution in population[:solutions_to_take]]
 
     return selected_individuals
 
 def tournament_selection(population: List[Tuple], tournament_size: int, parents_to_population_rate: float = 2/3) -> List[AlgorithmOutput]:
+    """
+    Select individuals from the population based on tournament selection.
+
+    :param population: A list of tuples containing solutions and their fitness values.
+    :param tournament_size: The number of individuals participating in each tournament.
+    :param parents_to_population_rate: The ratio of parents to the population size.
+    :return: A list of selected AlgorithmOutput solutions.
+    """
     solutions_to_take = int(ceil(len(population) * parents_to_population_rate))
     selected_individuals = []
 
@@ -83,6 +98,12 @@ def tournament_selection(population: List[Tuple], tournament_size: int, parents_
     return selected_individuals
 
 def roulette_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
+    """
+    Select individuals from the population based on roulette wheel selection.
+
+    :param population: A list of tuples containing solutions and their fitness values.
+    :return: A list of selected AlgorithmOutput solutions.
+    """
     solutions_to_take = int(ceil(len(population) * parents_to_population_rate))
     total_fitness = sum(1 / fitness for _, fitness in population)
     selected_individuals = []
@@ -100,6 +121,12 @@ def roulette_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
     return selected_individuals
 
 def modified_proportional_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
+    """
+    Select individuals from the population based on modified proportional selection.
+
+    :param population: A list of tuples containing solutions and their fitness values.
+    :return: A list of selected AlgorithmOutput solutions.
+    """
     solutions_to_take = int(ceil(len(population) * parents_to_population_rate))
     fitness_value = [fitness for _, fitness in population]
     total_fitness = sum(fitness_value)

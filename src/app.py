@@ -1,13 +1,11 @@
 from pathlib import Path
-from typing import List
 import numpy as np
 import networkx as nx
 import json
 import matplotlib.pyplot as plt
 from algorithms.interface import Order
-from objects.robot import Robot, RobotSize
+from objects.robot import Robot
 from objects.warehouse import Warehouse
-from algorithms.genetics.other import generate_random_solution
 from algorithms.genetics.genetic import GeneticAlgorithm
 from algorithms.swarm import AntAlgorithm
 import argparse
@@ -16,6 +14,14 @@ from tabulate import tabulate
 INPUT_DATA_DIR = Path('C:\\Users\\arkre\\OneDrive\\Pulpit\\deep_learning\\input_data')
 
 def test_genetic(selection_method: str, mutation_method: str, iterations_number: int, population: int):
+    """
+    Run a genetic algorithm with specified parameters and display results.
+
+    :param selection_method: The method for selecting individuals in the genetic algorithm.
+    :param mutation_method: The method for mutating individuals in the genetic algorithm.
+    :param iterations_number: The maximum number of iterations for the genetic algorithm.
+    :param population: The initial population size for the genetic algorithm.
+    """
     # Load necessary objects
     with open(INPUT_DATA_DIR / 'robots/robotsg2.json', 'r') as f:
         sizes = json.load(f)
