@@ -4,6 +4,7 @@ from algorithms.genetics.operators import crossover, shuffle_mutate, mutate_by_a
 from algorithms.genetics.other import generate_population, calculate_all, rank_selection,\
     calculate_one, parents_to_population_rate, get_weights, tournament_selection, roulette_selection, modified_proportional_selection
 from algorithms.genetics.transform_graph import change_graph
+import networkx as nx
 
 class GeneticAlgorithm:
     def __init__(self, order, warehouse, selection_method, mutation_method, population=None) -> None:
@@ -53,16 +54,16 @@ class GeneticAlgorithm:
             to_crossover.remove(parents[1])
             # crossover
             child = crossover(parents[0], parents[1], self.order, self.weights, self.warehouse)
-
+            nodes = nx.number_of_nodes(self.warehouse.graph)
             # mutation
             if self.mutation == 'shuffle':
                 if random.randrange(0, 1) < mutation_rate:
                     shuffle_mutate(child, len(child.result) // 2 + 1)  # can be changed
             elif self.mutation == 'add':
                 if random.randrange(0, 1) < mutation_rate:
-                    mutate_by_add_random_node(child)
+                    mutate_by_add_random_node(child, nodes)
             elif self.mutation == 'change':
-                value_change_mutation(child, mutation_rate, max_change=1)
+                value_change_mutation(child, mutation_rate, nodes, max_change=1)
             elif self.mutation == 'swap':
                 swap_mutate(child, mutation_rate)
 
