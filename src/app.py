@@ -11,36 +11,56 @@ from algorithms.genetics.other import generate_random_solution
 from algorithms.genetics.genetic import GeneticAlgorithm
 from algorithms.swarm import AntAlgorithm
 import argparse
+from tabulate import tabulate
 
 INPUT_DATA_DIR = Path('C:\\Users\\arkre\\OneDrive\\Pulpit\\deep_learning\\input_data')
 
 def test_genetic(selection_method: str, mutation_method: str, iterations_number: int, population: int):
+    # Load necessary objects
     with open(INPUT_DATA_DIR / 'robots/robotsg2.json', 'r') as f:
         sizes = json.load(f)
-    print(f"sizes:{sizes}")
+
     with open(INPUT_DATA_DIR / 'orders/order2.json', 'r') as f:
         order = json.load(f)
-    print(f"order:{order}")
+
+    # Create graph from adjlist
     graph = nx.read_adjlist(INPUT_DATA_DIR / 'graphs/10_10.adjlist')
-    print(f"graph:{graph}")
+    # Create robot list from loaded file
     robots = [
         Robot(f'{i+1}', size)
         for i, size in enumerate(sizes)
     ]
-    print(f"robots:{robots[0]}")
+    # Create object which represents warehouse
     warehouse = Warehouse(graph, robots)
-    print(f"warehouse:{warehouse.robots[0]}")
-    order = {int(k): v for k, v in order.items()}
-    print(f"order:{order}")
     warehouse.graph = nx.relabel_nodes(warehouse.graph, {n: int(n) for n in warehouse.graph})
-    print(f"warehouse.graph:{warehouse.graph}")
+    order = {int(k): v for k, v in order.items()}
+    # Create object which represents genetic algorithm
     GeneticAlg = GeneticAlgorithm(order=Order(order), warehouse=warehouse, selection_method=selection_method, mutation_method=mutation_method)
-    print(f"Order(order): {Order(order)}")
+    # Run the algorithm with specified arguments 
     GeneticAlg.run(max_iter=iterations_number, population_count=population)
-    print("---------------------------")
-    print(f"Genetic algorithm info:\nnumber of max iterations: {iterations_number}\ninitial population: {population}\nselection method: {selection_method},\nmutation method: {mutation_method}")
 
-    # print(GeneticAlg.best_solution)    
+    # Print in terminal information about the algorithm and all required dependencies
+    sizes_count = {
+        'small': 0,
+        'medium': 0,
+        'large': 0,
+    }
+    for size in sizes:
+        sizes_count[size] += 1
+
+    sizes_count = {key: value for key, value in sizes_count.items() if value != 0}
+    order_data = [(node, quantity) for node, quantity in order.items()]
+    size_data = [(robot, quantity) for robot, quantity in sizes_count.items()]
+
+    print("==================================")
+    print(tabulate(size_data, headers=['Robot type', 'Quantity']))
+    print("==================================")
+    print(tabulate(order_data, headers=['Node', 'Item quantity']))
+    print("==================================")
+    print(f"Genetic algorithm info:\nnumber of max iterations: {iterations_number}\ninitial population: {population}\nselection method: {selection_method}\nmutation method: {mutation_method}")
+    print("==================================")
+
+    # Plot the chart of cost function
     x_vec = np.linspace(1, len(GeneticAlg.best_list), len(GeneticAlg.best_list))
 
     plt.step(x_vec, GeneticAlg.best_list, color='b', linestyle='-')
