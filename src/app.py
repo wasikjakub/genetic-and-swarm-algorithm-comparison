@@ -14,7 +14,7 @@ import argparse
 
 INPUT_DATA_DIR = Path('C:\\Users\\arkre\\OneDrive\\Pulpit\\deep_learning\\input_data')
 
-def test_genetic(selection_method: str, iterations_number: int, population: int):
+def test_genetic(selection_method: str, mutation_method: str, iterations_number: int, population: int):
     with open(INPUT_DATA_DIR / 'robots/robotsg2.json', 'r') as f:
         sizes = json.load(f)
     print(f"sizes:{sizes}")
@@ -34,13 +34,12 @@ def test_genetic(selection_method: str, iterations_number: int, population: int)
     print(f"order:{order}")
     warehouse.graph = nx.relabel_nodes(warehouse.graph, {n: int(n) for n in warehouse.graph})
     print(f"warehouse.graph:{warehouse.graph}")
-    GeneticAlg = GeneticAlgorithm(Order(order), warehouse, selection_method)
+    GeneticAlg = GeneticAlgorithm(order=Order(order), warehouse=warehouse, selection_method=selection_method, mutation_method=mutation_method)
     print(f"Order(order): {Order(order)}")
     GeneticAlg.run(max_iter=iterations_number, population_count=population)
     print("---------------------------")
-    print(f"selection: {selection_method}, iterations: {iterations_number}, population: {population}")
+    print(f"Genetic algorithm info:\nnumber of max iterations: {iterations_number}\ninitial population: {population}\nselection method: {selection_method},\nmutation method: {mutation_method}")
 
-    # longest = calculate_one(solution, warehouse)
     # print(GeneticAlg.best_solution)    
     x_vec = np.linspace(1, len(GeneticAlg.best_list), len(GeneticAlg.best_list))
 
@@ -55,7 +54,6 @@ def test_genetic(selection_method: str, iterations_number: int, population: int)
     plt.tight_layout() 
     plt.show()
 
-    # return list_best
 
 def test_case_1():
     with open(INPUT_DATA_DIR / 'robots\\robots1.json', 'r') as f:
@@ -91,6 +89,6 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--selection', choices=['rank', 'tournament', 'roulette', 'proportional'], default='rank', help='Selection method')
     parser.add_argument('-i', '--iterations', default=100, type=int, help='Iteratiions number of genetic algorithm')
     parser.add_argument('-p', '--population', default=10, type=int, help='Initial population size')
+    parser.add_argument('-m', '--mutation', choices=['shuffle', 'add', 'change', 'swap'], default='shuffle', help='mutation method')
     args = parser.parse_args()
-    test_genetic(args.selection, args.iterations, args.population)
-    # test_case_1()
+    test_genetic(args.selection, args.mutation, args.iterations, args.population)

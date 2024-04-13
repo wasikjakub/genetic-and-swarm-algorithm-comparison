@@ -148,7 +148,7 @@ def calculate_times(robots: AlgorithmOutput, warehouse: Warehouse) -> Dict[Robot
                     if u != v:
                         total_distance += distance_dict_norm[(v, u)]
                 except KeyError:
-                    print(f"Edge ({u}, {v}) or ({v}, {u}) does not exist.")
+                    continue
 
         distance_dict[robot] = float("{:.2f}".format(total_distance))
 

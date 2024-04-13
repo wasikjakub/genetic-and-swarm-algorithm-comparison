@@ -4,7 +4,7 @@ from typing import Dict
 from algorithms.interface import RobotRoute, AlgorithmOutput, Order
 from objects.robot import Robot
 from algorithms.genetics.other import fill_routes, cut_zeros, add_zeros
-
+import numpy as np
 
 def crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: Order, weights: Dict[int, int], warehouse)\
         -> AlgorithmOutput:
@@ -58,7 +58,7 @@ def crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: O
     return new_solution
 
 
-def mutate(solution: AlgorithmOutput, robots_count: int):
+def shuffle_mutate(solution: AlgorithmOutput, robots_count: int):
     """
     Shuffle node order in robots_count randomly chosen robots
 
@@ -73,6 +73,54 @@ def mutate(solution: AlgorithmOutput, robots_count: int):
         random.shuffle(solution.result[robots[robot_i]].route)
     add_zeros(solution)
 
+def mutate_by_add_random_node(solution: AlgorithmOutput) -> None:
+    """
+    Mutate the solution by adding a random node to a random route of a random robot.
+
+    :param solution: The solution to mutate.
+    """
+    NUMBER_OF_GRAPH_NODES = 100
+    robots = list(solution.result.keys())
+    chosen_robot = random.choice(robots)
+    route = solution.result[chosen_robot].route
+    random_node = random.randint(1, len(route) - 1)
+    route.insert(random_node, random.randint(1, NUMBER_OF_GRAPH_NODES))
+    add_zeros(solution)
+
+def value_change_mutation(solution: AlgorithmOutput, mutation_rate: float, max_change: int):
+    """
+    Perform value change mutation on a randomly selected gene in each robot's route in the solution.
+
+    :param solution: The current solution to be mutated
+    :param mutation_rate: The probability of mutation for each robot's route
+    :param max_change: The maximum value by which the gene can be changed
+    """
+    NUMBER_OF_GRAPH_NODES = 100
+    for robot, route in solution.result.items():
+        if random.random() < mutation_rate:
+            index = random.randint(0, len(route.route) - 1)
+            
+            # random change to the selected gene
+            change = random.randint(-max_change, max_change)
+            route.route[index] += change
+
+            route.route[index] = max(route.route[index], 0)
+            route.route[index] = min(route.route[index], NUMBER_OF_GRAPH_NODES) # valid graph node
+
+            solution.result[robot] = route
+
+def swap_mutate(solution: AlgorithmOutput, mutation_rate: float) -> None:
+    """
+    Perform swap mutation on a randomly selected gene pair in each robot's route in the solution.
+
+    :param solution: The current solution to be mutated
+    :param mutation_rate: The probability of mutation for each robot's route
+    """
+    for robot, route in solution.result.items():
+        if random.random() < mutation_rate:
+            index1, index2 = random.sample(range(len(route.route)), 2)
+            route.route[index1], route.route[index2] = route.route[index2], route.route[index1]
+            solution.result[robot] = route
 
 # teściki - do wywalenia ostatecznie, nie chce mi się pisać unit testów
 # trzea poprawić
