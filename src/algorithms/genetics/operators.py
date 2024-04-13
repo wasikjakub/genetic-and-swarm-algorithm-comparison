@@ -79,7 +79,7 @@ def mutate_by_add_random_node(solution: AlgorithmOutput) -> None:
 
     :param solution: The solution to mutate.
     """
-    NUMBER_OF_GRAPH_NODES = 100
+    NUMBER_OF_GRAPH_NODES = 100 #hardcode for 10x10 graph - no time for adapt to other graph size
     robots = list(solution.result.keys())
     chosen_robot = random.choice(robots)
     route = solution.result[chosen_robot].route
@@ -95,7 +95,7 @@ def value_change_mutation(solution: AlgorithmOutput, mutation_rate: float, max_c
     :param mutation_rate: The probability of mutation for each robot's route
     :param max_change: The maximum value by which the gene can be changed
     """
-    NUMBER_OF_GRAPH_NODES = 100
+    NUMBER_OF_GRAPH_NODES = 100 #hardcode for 10x10 graph - no time for adapt to other graph size
     for robot, route in solution.result.items():
         if random.random() < mutation_rate:
             index = random.randint(0, len(route.route) - 1)
