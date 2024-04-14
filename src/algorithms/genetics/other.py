@@ -41,7 +41,6 @@ def fill_routes(solution: AlgorithmOutput, items_left: Order, weights: Dict[int,
 def get_weights(orders: Dict) -> Dict:
     weight_dict = {}
     weight_range = [0.2, 0.2, 0.3, 0.4, 0.5] #adjust as needed
-    # weight_range = [2, 1, 1.5, 3]
     index = 0
 
     for item_id in orders.keys():
@@ -226,7 +225,6 @@ def generate_random_solution(orders: Order, warehouse: Warehouse) -> AlgorithmOu
 
             #filter out items that have already been picked
             available_items = [item_id for item_id in orders.keys() if picked_items[item_id] < orders[item_id]]
-
 
             if not available_items:
                 break
