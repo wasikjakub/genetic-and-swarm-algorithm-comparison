@@ -2,7 +2,7 @@ import random
 from math import ceil
 from algorithms.genetics.operators import crossover, shuffle_mutate, mutate_by_add_random_node, value_change_mutation, swap_mutate
 from algorithms.genetics.other import generate_population, calculate_all, rank_selection,\
-    calculate_one, parents_to_population_rate, get_weights, tournament_selection, roulette_selection, modified_proportional_selection
+    calculate_one, parents_to_population_rate, get_weights, tournament_selection, roulette_selection, modified_proportional_selection, truncation_selection
 from algorithms.genetics.transform_graph import change_graph
 import networkx as nx
 
@@ -46,6 +46,8 @@ class GeneticAlgorithm:
             to_crossover = roulette_selection(self.population)
         elif self.selection == 'proportional':
             to_crossover = modified_proportional_selection(self.population)
+        elif self.selection == 'truanction':
+            to_crossover = truncation_selection(self.population)
         for _ in range(len(self.population)-len(temp_population)):
             # if len(to_crossover) < 2:
             #     break
