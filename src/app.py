@@ -115,7 +115,7 @@ def test_case_1():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Enter flags for various algorithms fields:")
-    parser.add_argument('-s', '--selection', choices=['rank', 'tournament', 'roulette', 'proportional'], default='rank', help='Selection method')
+    parser.add_argument('-s', '--selection', choices=['rank', 'tournament', 'roulette', 'proportional', 'truanction'], default='rank', help='Selection method')
     parser.add_argument('-i', '--iterations', default=100, type=int, help='Iteratiions number of genetic algorithm')
     parser.add_argument('-p', '--population', default=10, type=int, help='Initial population size')
     parser.add_argument('-m', '--mutation', choices=['shuffle', 'add', 'change', 'swap'], default='shuffle', help='mutation method')
