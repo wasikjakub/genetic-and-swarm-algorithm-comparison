@@ -56,6 +56,39 @@ def crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: O
     add_zeros(parent2)
     return new_solution
 
+def two_point_crossover(parent1: AlgorithmOutput, parent2: AlgorithmOutput, order_items: Order, weights: Dict[int, int], warehouse) -> AlgorithmOutput:
+    """
+    Function that swaps segments of solutions' routes between parent1 and parent2 using two-point crossover
+
+    :param order_items:
+    :param parent1:
+    :param parent2:
+    :return: new solution based on two other
+    """
+    cut_zeros(parent1)
+    cut_zeros(parent2)
+
+    robots = list(parent1.result.keys())
+    num_robots = len(robots)
+
+    if num_robots > 1:
+        points = sorted(random.sample(range(num_robots), 2))
+    else:
+        points = [0, 0]  
+
+    new_solution = AlgorithmOutput({})
+
+    for i in range(num_robots):
+        if points[0] <= i < points[1]:
+            new_solution.result[robots[i]] = copy.deepcopy(parent2.result[robots[i]])
+        else:
+            new_solution.result[robots[i]] = copy.deepcopy(parent1.result[robots[i]])
+
+    fill_routes(new_solution, Order(copy.deepcopy(order_items.items)), weights, warehouse)
+    add_zeros(new_solution)
+    add_zeros(parent1)
+    add_zeros(parent2)
+    return new_solution
 
 def shuffle_mutate(solution: AlgorithmOutput, robots_count: int):
     """
@@ -118,27 +151,3 @@ def swap_mutate(solution: AlgorithmOutput, mutation_rate: float) -> None:
             index1, index2 = random.sample(range(len(route.route)), 2)
             route.route[index1], route.route[index2] = route.route[index2], route.route[index1]
             solution.result[robot] = route
-
-# teściki - do wywalenia ostatecznie, nie chce mi się pisać unit testów
-# trzea poprawić
-# r1 = Robot('1')
-# t1 = [1, 3, 5]
-# i1 = {1: 1, 3: 3, 5: 4}
-# rr1 = RobotRoute(t1, i1)
-# r2 = Robot('2')
-# t2 = [1, 2, 4]
-# i2 = {1: 1, 2: 3, 4: 3}
-# rr2 = RobotRoute(t2, i2)
-# r3 = Robot('3')
-# t3 = [2, 3, 4, 5]
-# i3 = {2: 3, 3: 3, 4: 4, 5: 4}
-# rr3 = RobotRoute(t3, i3)
-#
-# orderr = Order({1: 2, 2: 6, 3: 6, 4: 7, 5: 8})
-#
-# parent1 = AlgorithmOutput({r1: rr3, r2: rr1, r3: rr2})
-# parent2 = AlgorithmOutput({r1: rr1, r2: rr2, r3: rr3})
-# weights = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
-# nowe = crossover(parent1, parent2, orderr, weights)
-# mutate(parent2, 1)
-# print(nowe)
