@@ -57,6 +57,19 @@ def capacity_left(robot: Robot, route: RobotRoute, weights: Dict[int, int]) -> i
         s += weights[i] * quantity  # I need this weights dict that says which item weighs how much
     return robot.load_capacity - s
 
+def truncation_selection(population: List[Tuple], parents_to_population_rate: float = 2/3) -> List[AlgorithmOutput]:
+    """
+    Select individuals from the population based on truncation selection.
+
+    :param population: A list of tuples containing solutions and their fitness values.
+    :param parents_to_population_rate: The ratio of parents to the population size.
+    :return: A list of selected AlgorithmOutput solutions.
+    """
+    sorted_population = sorted(population, key=lambda x: x[1], reverse=True)
+    solutions_to_take = int(ceil(len(population) * parents_to_population_rate))
+    selected_individuals = [individual[0] for individual in sorted_population[:solutions_to_take]]
+
+    return selected_individuals
 
 def rank_selection(population: List[Tuple]) -> List[AlgorithmOutput]:
     """
