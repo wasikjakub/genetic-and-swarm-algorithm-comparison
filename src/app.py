@@ -67,7 +67,7 @@ def test_genetic(selection_method: str, mutation_method: str, crossover_method: 
     print("==================================")
     print(tabulate(order_data, headers=['Node', 'Item quantity']))
     print("==================================")
-    print(f"Genetic algorithm info:\nnumber of max iterations: {iterations_number}\ninitial population: {population}\nselection method: {selection_method}\nmutation method: {mutation_method}\nmutation method: {crossover_method}")
+    print(f"Genetic algorithm info:\nnumber of max iterations: {iterations_number}\ninitial population: {population}\nselection method: {selection_method}\nmutation method: {mutation_method}\ncrossover method: {crossover_method}")
     print("==================================")
 
     # Plot the chart of cost function
