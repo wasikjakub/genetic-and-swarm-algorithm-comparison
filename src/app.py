@@ -16,12 +16,13 @@ from pathlib import Path
 APP_DIR = Path(__file__).resolve().parent
 INPUT_DATA_DIR = APP_DIR.parent / 'input_data'
 
-def test_genetic(selection_method: str, mutation_method: str, iterations_number: int, population: int):
+def test_genetic(selection_method: str, mutation_method: str, crossover_method: str, iterations_number: int, population: int):
     """
     Run a genetic algorithm with specified parameters and display results.
 
     :param selection_method: The method for selecting individuals in the genetic algorithm.
     :param mutation_method: The method for mutating individuals in the genetic algorithm.
+    :param crossover_method: The method for crossover in the genetic algorithm.
     :param iterations_number: The maximum number of iterations for the genetic algorithm.
     :param population: The initial population size for the genetic algorithm.
     """
@@ -44,7 +45,7 @@ def test_genetic(selection_method: str, mutation_method: str, iterations_number:
     warehouse.graph = nx.relabel_nodes(warehouse.graph, {n: int(n) for n in warehouse.graph})
     order = {int(k): v for k, v in order.items()}
     # Create object which represents genetic algorithm
-    GeneticAlg = GeneticAlgorithm(order=Order(order), warehouse=warehouse, selection_method=selection_method, mutation_method=mutation_method)
+    GeneticAlg = GeneticAlgorithm(order=Order(order), warehouse=warehouse, selection_method=selection_method, mutation_method=mutation_method, crossover_method=crossover_method)
     # Run the algorithm with specified arguments 
     GeneticAlg.run(max_iter=iterations_number, population_count=population)
 
@@ -66,7 +67,7 @@ def test_genetic(selection_method: str, mutation_method: str, iterations_number:
     print("==================================")
     print(tabulate(order_data, headers=['Node', 'Item quantity']))
     print("==================================")
-    print(f"Genetic algorithm info:\nnumber of max iterations: {iterations_number}\ninitial population: {population}\nselection method: {selection_method}\nmutation method: {mutation_method}")
+    print(f"Genetic algorithm info:\nnumber of max iterations: {iterations_number}\ninitial population: {population}\nselection method: {selection_method}\nmutation method: {mutation_method}\nmutation method: {crossover_method}")
     print("==================================")
 
     # Plot the chart of cost function
@@ -107,9 +108,6 @@ def test_case_1():
         beta=0.1,
         decay_rate=0.01
     )
-
-    # here will be generating plots script etc.
-
     return alg
 
 
@@ -119,5 +117,6 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--iterations', default=100, type=int, help='Iteratiions number of genetic algorithm')
     parser.add_argument('-p', '--population', default=10, type=int, help='Initial population size')
     parser.add_argument('-m', '--mutation', choices=['shuffle', 'add', 'change', 'swap'], default='shuffle', help='mutation method')
+    parser.add_argument('-c', '--crossover', choices=['crossover', 'two_point_crossover'], default='crossover', help='crossover method')
     args = parser.parse_args()
-    test_genetic(args.selection, args.mutation, args.iterations, args.population)
+    test_genetic(args.selection, args.mutation, args.crossover, args.iterations, args.population)
