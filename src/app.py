@@ -134,3 +134,8 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--crossover', choices=['crossover', 'two_point_crossover'], default='crossover', help='crossover method')
     args = parser.parse_args()
     test_genetic(args.selection, args.mutation, args.crossover, args.iterations, args.population)
+    
+    test_robots = ['robots/robots1.json', 'robots/robots2.json', 'robots/robots3.json', 'robots/robots4.json', 'robots/robots5.json', 'robots/robots6.json']
+    test_orders = ['orders/order1.json', 'orders/order1.json', 'orders/order1.json', 'orders/order2.json', 'orders/order2.json', 'orders/order2.json']
+    for i in range(6):
+        main(test_case=test_case, index=i+1, link_to_robots=test_robots[i], link_to_orders=test_orders[i])
