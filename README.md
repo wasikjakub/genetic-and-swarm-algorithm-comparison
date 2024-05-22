@@ -1,6 +1,7 @@
 # Deep Learning Project
 
-This project is focused on deep learning and aims to compare results for genetic and swarm algorithm.
+Repository fora group project for Deep Learning and Intelligent Computnace course.
+This project aims to compare results for genetic and swarm algorithm.
 
 ## Table of Contents
 
