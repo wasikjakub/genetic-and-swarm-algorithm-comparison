@@ -1,6 +1,6 @@
 # Deep Learning Project
 
-This project is focused on deep learning and aims to [briefly describe the goal or purpose of the project].
+This project is focused on deep learning and aims to compare results for genetic and swarm algorithm.
 
 ## Table of Contents
 
