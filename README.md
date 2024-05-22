@@ -7,7 +7,6 @@ This project is focused on deep learning and aims to compare results for genetic
 - [Installation](#installation)
 - [Robot](#Robot)
 - [Node](#Node)
-- [Lista zakpowa](#Lista_zakpowa)
 
 ## Installation
 
@@ -34,7 +33,4 @@ This project is focused on deep learning and aims to compare results for genetic
 1. id
 2. waga pojedyńczego elementu
 
-# Lista_zakpowa
-1. prdukty, id prduktu, ilość id każdego produku 
-2. 
 
