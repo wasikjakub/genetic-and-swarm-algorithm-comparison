@@ -43,23 +43,23 @@ The solution measures the time from order receipt to completion. To minimize thi
 
 ## Results
 
-# Swarm 1
+### Swarm 1
 
 ![image](https://github.com/wasikjakub/genetic-and-swarm-algorithm-comparison/assets/144064944/0267c467-b4c8-4a78-98c6-130d3a15c715)
 
 ![image](https://github.com/wasikjakub/genetic-and-swarm-algorithm-comparison/assets/144064944/9d9d40c8-b0ae-4fae-9a94-76d7dc88f0cc)
 
-# Genetic 1
+### Genetic 1
 
 ![image](https://github.com/wasikjakub/genetic-and-swarm-algorithm-comparison/assets/144064944/c199f583-f3f0-4fa8-9775-f319b8c6f4a1)
 
-# Swarm 2
+### Swarm 2
 
 ![image](https://github.com/wasikjakub/genetic-and-swarm-algorithm-comparison/assets/144064944/3660a583-5c87-4785-95ee-46ccb514c2e2)
 
 ![image](https://github.com/wasikjakub/genetic-and-swarm-algorithm-comparison/assets/144064944/25872b2e-1cb7-4008-a79e-8df17574b70f)
 
-# Genetic 2
+### Genetic 2
 
 ![image](https://github.com/wasikjakub/genetic-and-swarm-algorithm-comparison/assets/144064944/4f1095be-492e-45c8-b80f-4eec4c0bc64a)
 
