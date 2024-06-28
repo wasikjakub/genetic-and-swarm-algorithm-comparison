@@ -1,6 +1,6 @@
-# Deep Learning Project
+# Genetic vs swarm algorithm comparison for n-traveling salesman problem 
 
-Repository fora group project for Deep Learning and Intelligent Computnace course.
+Repository fo ra group project for Deep Learning and Intelligent Computnace course.
 This project aims to compare results for genetic and swarm algorithm.
 
 ## Table of Contents
