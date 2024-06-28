@@ -6,8 +6,10 @@ This project aims to compare results for genetic and swarm algorithm.
 ## Table of Contents
 
 - [Installation](#installation)
+- [Problem](#Problem)
 - [Robot](#Robot)
 - [Node](#Node)
+- [Results](#Results)
 
 ## Installation
 
