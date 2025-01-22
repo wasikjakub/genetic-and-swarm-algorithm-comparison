@@ -63,3 +63,13 @@ The solution measures the time from order receipt to completion. To minimize thi
 
 ![image](https://github.com/wasikjakub/genetic-and-swarm-algorithm-comparison/assets/144064944/4f1095be-492e-45c8-b80f-4eec4c0bc64a)
 
+## Additional Authors
+
+Huge thanks for contributions for: 
+- @ttarnawski
+- @michalsciubisz
+- @WojtekTok
+- @adam-filapek
+- @if-netizen
+- @rkeere
+- @BartoszBar
